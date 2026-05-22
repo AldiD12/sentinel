@@ -53,6 +53,7 @@ export interface SentinelEvent {
   requestRateLastMinute?: number;
   attackScenario?: string;
   typingSpeedMs?: number;
+  precedingEvents?: string[];
 }
 
 export interface RiskAssessment {

@@ -42,6 +42,11 @@ function detectPastedCredentials(event: SentinelEvent, _baseline: UserBaseline):
 function detectApiReplayPattern(event: SentinelEvent, _baseline: UserBaseline): Signal | null {
   if (event.type !== 'transfer') return null;
 
+  // Client-sent session breadcrumb takes priority (bank/attacker pages send precedingEvents)
+  const hasViewBalance = event.precedingEvents?.includes('view_balance') ?? false;
+  if (hasViewBalance) return null;
+
+  // Fallback: check store for events that don't send precedingEvents
   const recentViewBalance = getRecentEventForUserByType(
     event.userId,
     'view_balance',

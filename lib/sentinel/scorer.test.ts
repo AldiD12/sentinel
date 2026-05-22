@@ -147,6 +147,7 @@ const scenarios: Array<{
       payeeId: 'payee_mom',
       payeeName: 'Mom',
       isKnownPayee: true,
+      precedingEvents: ['login', 'view_balance'],
     },
     expectedVerdict: 'soft_challenge',
     minScore: 31,
