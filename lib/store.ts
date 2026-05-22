@@ -41,6 +41,19 @@ export function subscribeToEvents(fn: (e: ProcessedEvent) => void) {
   return () => eventEmitters.delete(fn);
 }
 
+export function overrideEvent(eventId: string, note: string): ProcessedEvent | null {
+  const event = events.find(e => e.eventId === eventId);
+  if (!event) return null;
+  event.overridden = true;
+  event.overrideNote = note;
+  eventEmitters.forEach(fn => fn(event));
+  return event;
+}
+
+export function clearStore() {
+  events.length = 0;
+}
+
 export function getStats() {
   const allowed = events.filter(e => e.verdict === 'allow').length;
   const challenged = events.filter(e => e.verdict === 'soft_challenge' || e.verdict === 'hard_challenge').length;
