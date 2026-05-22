@@ -31,7 +31,7 @@ export default function SimulationHubPage() {
       </div>
 
       {/* Cards Grid */}
-      <div className="grid md:grid-cols-2 gap-6 w-full max-w-3xl z-20 px-2 animate-slide-up">
+      <div className="grid md:grid-cols-3 gap-6 w-full max-w-5xl z-20 px-2 animate-slide-up">
         
         {/* CARD 1: SECURE BANK */}
         <button
@@ -73,8 +73,8 @@ export default function SimulationHubPage() {
             <div className="p-3.5 rounded-2xl bg-red-950/40 border border-red-900/30 text-red-400 group-hover:scale-110 transition-transform">
               <Terminal className="w-6 h-6" />
             </div>
-            <span className="text-[10px] font-semibold bg-indigo-950/40 border border-indigo-900/30 text-indigo-400 px-2.5 py-0.5 rounded-full font-mono uppercase">
-              NEXT STEP
+            <span className="text-[10px] font-semibold bg-red-950/40 border border-red-900/30 text-red-400 px-2.5 py-0.5 rounded-full font-mono uppercase">
+              RE-TEAM
             </span>
           </div>
 
@@ -85,6 +85,34 @@ export default function SimulationHubPage() {
             </h2>
             <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
               Spoof network coordinates (IP, UA, ASN), trigger brute force request floods, and execute programmatical behavioral bypasses.
+            </p>
+          </div>
+        </button>
+
+        {/* CARD 3: SENTINEL SOC MONITOR */}
+        <button
+          onClick={() => router.push('/soc')}
+          className="group relative bg-slate-900/40 border border-slate-850 hover:border-indigo-500/50 p-6 rounded-3xl text-left transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-950/10 active:scale-[0.98] cursor-pointer flex flex-col justify-between min-h-[220px]"
+        >
+          {/* Accent glow on hover */}
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 via-indigo-500/0 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl pointer-events-none" />
+
+          <div className="flex justify-between items-start w-full">
+            <div className="p-3.5 rounded-2xl bg-indigo-950/40 border border-indigo-900/30 text-indigo-400 group-hover:scale-110 transition-transform">
+              <Shield className="w-6 h-6" />
+            </div>
+            <span className="text-[10px] font-semibold bg-indigo-950/40 border border-indigo-900/30 text-indigo-400 px-2.5 py-0.5 rounded-full font-mono uppercase">
+              ANALYST
+            </span>
+          </div>
+
+          <div className="mt-8">
+            <h2 className="text-lg font-bold text-slate-100 group-hover:text-white flex items-center gap-2">
+              Sentinel SOC Panel
+              <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
+            </h2>
+            <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
+              Real-time threat analytics, live ingestion telemetry stream, deep packet inspectors, and automated false-positive whitelist overrides.
             </p>
           </div>
         </button>
