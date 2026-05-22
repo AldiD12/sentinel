@@ -6,7 +6,7 @@ import { behavioralDetectors } from './behavioral';
 import { transactionalDetectors } from './transactional';
 
 export function score(event: SentinelEvent): RiskAssessment {
-  const startTime = Date.now();
+  const startTime = performance.now();
   const baseline = USERS[event.userId];
 
   if (!baseline) {
@@ -15,7 +15,7 @@ export function score(event: SentinelEvent): RiskAssessment {
       score: 100,
       verdict: 'block',
       signals: [{ name: 'unknown_user', layer: 'network', weight: 100, reason: 'User ID not in system' }],
-      latencyMs: Date.now() - startTime,
+      latencyMs: Math.round((performance.now() - startTime) * 100) / 100,
     };
   }
 
@@ -38,6 +38,6 @@ export function score(event: SentinelEvent): RiskAssessment {
     score: totalScore,
     verdict,
     signals,
-    latencyMs: Date.now() - startTime,
+    latencyMs: Math.round((performance.now() - startTime) * 100) / 100,
   };
 }
