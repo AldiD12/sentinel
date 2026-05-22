@@ -2,13 +2,15 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from '../SessionContext';
-import { ChevronLeft, Send, AlertTriangle, ShieldCheck, ShieldAlert, Sparkles, HelpCircle, Eye, ArrowRight, Lock } from 'lucide-react';
+import { useSession } from '@/lib/session';
+import { buildEvent } from '@/lib/telemetry';
+import { submitEvent } from '@/lib/mock-api';
+import { ChevronLeft, AlertTriangle, ShieldCheck, ShieldAlert, Sparkles, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function BankTransferPage() {
   const router = useRouter();
-  const { userId, precedingEvents, knownPayeesList, submitBankEvent } = useSession();
+  const { userId, sessionId, sessionStartMs, precedingEvents, knownPayeesList, addAssessment, pushEvent } = useSession();
   const [mounted, setMounted] = useState(false);
 
   // Form states
@@ -38,7 +40,7 @@ export default function BankTransferPage() {
   useEffect(() => {
     setMounted(true);
     if (!userId) {
-      router.push('/app/bank');
+      router.push('/bank');
     }
   }, [userId]);
 
@@ -91,7 +93,8 @@ export default function BankTransferPage() {
 
     // Find payee name
     let payeeName = 'Custom Recipient';
-    if (selectedPayeeId === 'custom_payee') {
+    const payeeIsNew = selectedPayeeId === 'custom_payee';
+    if (payeeIsNew) {
       payeeName = 'External IBAN Transfer';
     } else {
       const p = knownPayeesList.find(item => item.id === selectedPayeeId);
@@ -103,16 +106,31 @@ export default function BankTransferPage() {
       ? Math.round(keystrokeDelays.reduce((a, b) => a + b, 0) / keystrokeDelays.length)
       : undefined;
 
+    const payeeId = payeeIsNew ? 'external_acc_' + Math.random().toString(36).substring(2, 8) : selectedPayeeId;
+
     try {
+      // Build high-fidelity event payload
+      const event = buildEvent(
+        'transfer',
+        userId,
+        sessionId,
+        sessionStartMs,
+        precedingEvents,
+        {
+          amount: amountNum,
+          payeeId,
+          payeeName,
+          isKnownPayee: !payeeIsNew,
+          typingSpeedMs: avgTypingSpeed,
+          inputMethod,
+          payeeIsNew
+        } as any
+      );
+
       // Execute security assessment
-      const assessment = await submitBankEvent('transfer', {
-        amount: amountNum,
-        payeeId: selectedPayeeId === 'custom_payee' ? 'external_acc_' + Math.random().toString(36).substr(2, 6) : selectedPayeeId,
-        payeeName,
-        isKnownPayee: selectedPayeeId !== 'custom_payee',
-        typingSpeedMs: avgTypingSpeed,
-        inputMethod,
-      });
+      const assessment = await submitEvent(event);
+      addAssessment(event as any, assessment);
+      pushEvent('transfer');
 
       setTxDetails({
         amount: amountNum,
@@ -213,8 +231,8 @@ export default function BankTransferPage() {
         </div>
 
         <button
-          onClick={() => router.push('/app/bank/home')}
-          className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 rounded-xl font-bold hover:shadow-lg active:scale-[0.98] transition-all cursor-pointer"
+          onClick={() => router.push('/bank/home')}
+          className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 rounded-xl font-bold hover:shadow-lg active:scale-[0.98] transition-all cursor-pointer text-sm"
         >
           Return to Dashboard
         </button>
@@ -252,8 +270,8 @@ export default function BankTransferPage() {
         </div>
 
         <button
-          onClick={() => router.push('/app/bank/home')}
-          className="w-full bg-red-900/30 text-red-300 border border-red-800/80 py-3.5 rounded-xl font-semibold hover:bg-red-900/50 hover:text-white transition-all cursor-pointer"
+          onClick={() => router.push('/bank/home')}
+          className="w-full bg-red-900/30 text-red-300 border border-red-800/80 py-3.5 rounded-xl font-semibold hover:bg-red-900/50 hover:text-white transition-all cursor-pointer text-sm"
         >
           Return to Dashboard
         </button>
@@ -403,7 +421,7 @@ export default function BankTransferPage() {
       {/* Top Navbar */}
       <div className="flex items-center gap-3">
         <button
-          onClick={() => router.push('/app/bank/home')}
+          onClick={() => router.push('/bank/home')}
           className="p-2 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-850 text-slate-400 hover:text-white transition-colors cursor-pointer"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -512,7 +530,7 @@ export default function BankTransferPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white py-3.5 rounded-xl font-bold hover:shadow-lg active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none flex justify-center items-center gap-2 cursor-pointer mt-8"
+          className="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white py-3.5 rounded-xl font-bold hover:shadow-lg active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none flex justify-center items-center gap-2 cursor-pointer mt-8 text-sm"
         >
           {isSubmitting ? (
             <span className="w-5 h-5 rounded-full border-2 border-white/30 border-t-white animate-spin" />

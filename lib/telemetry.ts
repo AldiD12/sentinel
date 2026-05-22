@@ -38,6 +38,18 @@ export function buildEvent(
   const profile = DEVICE_PROFILES[userId] ?? DEVICE_PROFILES['user_001'];
   const now = Date.now();
 
+  let overrides: Partial<SentinelEvent> = {};
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = window.localStorage.getItem('sentinel_telemetry_overrides');
+      if (stored) {
+        overrides = JSON.parse(stored);
+      }
+    } catch (e) {
+      console.warn('Failed to parse sentinel_telemetry_overrides', e);
+    }
+  }
+
   return {
     type,
     userId,
@@ -50,6 +62,7 @@ export function buildEvent(
     precedingEvents,
     requestRateLastMinute: 3 + Math.floor(Math.random() * 5),
     hasValidCSRF: true,
+    ...overrides,
     ...extra,
   } as any; // Cast in case types are slightly stricter in types.ts
 }

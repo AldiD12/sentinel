@@ -2,27 +2,41 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from '../SessionContext';
+import { useSession } from '@/lib/session';
+import { buildEvent } from '@/lib/telemetry';
+import { submitEvent } from '@/lib/mock-api';
 import { USERS } from '@/lib/users';
-import { ShieldCheck, ShieldAlert, ArrowUpRight, Plus, LogOut, ArrowDownLeft, Wallet, Shield, Clock, Send } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, ArrowUpRight, Plus, LogOut, Wallet, Clock, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function BankHomePage() {
   const router = useRouter();
-  const { userId, logout, precedingEvents, sessionStartMs, telemetryConfig, submitBankEvent } = useSession();
+  const { userId, sessionId, sessionStartMs, precedingEvents, precedingAssessments, latestAssessment, addAssessment, pushEvent, setUser } = useSession();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     if (!userId) {
-      router.push('/app/bank');
+      router.push('/bank');
     }
   }, [userId]);
 
   // Submit view_balance event upon viewing the dashboard (Telemetry!)
   useEffect(() => {
     if (userId) {
-      submitBankEvent('view_balance').catch(() => {});
+      const event = buildEvent(
+        'view_balance',
+        userId,
+        sessionId,
+        sessionStartMs,
+        precedingEvents
+      );
+      submitEvent(event)
+        .then(assessment => {
+          addAssessment(event as any, assessment);
+          pushEvent('view_balance');
+        })
+        .catch(() => {});
     }
   }, [userId]);
 
@@ -38,45 +52,48 @@ export default function BankHomePage() {
 
   // Starting balance configuration
   const STARTING_BALANCES: Record<string, number> = {
-    user_001: 1240.00,
-    user_002: 850.00,
-    user_003: 4500.00,
+    user_001: 2840.00, // Aldi: €2,840 as requested in Phase 1
+    user_002: 1205.00, // Anest: €1,205 as requested in Phase 1
+    user_003: 8950.00, // Kristi: €8,950 as requested in Phase 1
   };
 
   const initialBalance = STARTING_BALANCES[userId] || 1000.00;
 
   // Calculate current balance by subtracting all successful transfers
-  const successfulTransfers = precedingEvents.filter(
+  const successfulTransfers = precedingAssessments.filter(
     e => e.type === 'transfer' && e.verdict !== 'block' && e.amount !== undefined
   );
   
   const totalDeducted = successfulTransfers.reduce((sum, e) => sum + (e.amount || 0), 0);
   const currentBalance = initialBalance - totalDeducted;
 
-  // Generate historical baseline transactions
+  // Generate historical baseline transactions (3 items per user as requested in Phase 1)
   const getHistoricalTransactions = (uid: string) => {
     if (uid === 'user_001') {
       return [
         { id: 'h1', payeeName: 'Dr. Klodian (Dentist)', amount: 50.00, timestamp: Date.now() - 172800000, verdict: 'allow' },
         { id: 'h2', payeeName: 'Ilir Shkodra (Landlord)', amount: 350.00, timestamp: Date.now() - 432000000, verdict: 'allow' },
+        { id: 'h3', payeeName: 'Abcom Broadband AL', amount: 25.00, timestamp: Date.now() - 604800000, verdict: 'allow' },
       ];
     }
     if (uid === 'user_002') {
       return [
         { id: 'h1', payeeName: 'Fieri Fitness Center', amount: 12.00, timestamp: Date.now() - 86400000, verdict: 'allow' },
         { id: 'h2', payeeName: 'Buci Family Account', amount: 45.00, timestamp: Date.now() - 345600000, verdict: 'allow' },
+        { id: 'h3', payeeName: 'Valbona Hoxha (Mom)', amount: 100.00, timestamp: Date.now() - 864000000, verdict: 'allow' },
       ];
     }
     return [
       { id: 'h1', payeeName: 'Ego Office Supplies', amount: 200.00, timestamp: Date.now() - 259200000, verdict: 'allow' },
       { id: 'h2', payeeName: 'Tirana Business Park Rent', amount: 1200.00, timestamp: Date.now() - 518400000, verdict: 'allow' },
+      { id: 'h3', payeeName: 'Hoxha Consulting Sh.p.k.', amount: 500.00, timestamp: Date.now() - 950400000, verdict: 'allow' },
     ];
   };
 
   const historicalTransfers = getHistoricalTransactions(userId);
 
   // Combine real-time session transfers with historical ones
-  const sessionTransfers = precedingEvents
+  const sessionTransfers = precedingAssessments
     .filter(e => e.type === 'transfer')
     .map(e => ({
       id: e.id || Math.random().toString(),
@@ -89,12 +106,12 @@ export default function BankHomePage() {
   const allTransfers = [...sessionTransfers.reverse(), ...historicalTransfers];
 
   // Security risk indicator based on latest assessment verdict
-  const lastVerdict = precedingEvents[precedingEvents.length - 1]?.verdict || 'allow';
-  const lastScore = precedingEvents[precedingEvents.length - 1]?.score || 0;
+  const lastVerdict = latestAssessment?.verdict || 'allow';
+  const lastScore = latestAssessment?.score || 0;
 
   const handleLogoutClick = () => {
-    logout();
-    router.push('/app/bank');
+    setUser('');
+    router.push('/bank');
   };
 
   return (
@@ -177,7 +194,7 @@ export default function BankHomePage() {
       {/* Quick Action Navigation Grid */}
       <div className="grid grid-cols-2 gap-3.5">
         <button
-          onClick={() => router.push('/app/bank/transfer')}
+          onClick={() => router.push('/bank/transfer')}
           className="group bg-slate-950/60 hover:bg-indigo-950/15 border border-slate-850 hover:border-indigo-500/50 p-4 rounded-2xl flex flex-col justify-between items-start text-left transition-all duration-300 active:scale-[0.97] hover:shadow-lg hover:shadow-indigo-950/5 cursor-pointer"
         >
           <div className="p-2.5 rounded-xl bg-indigo-950/80 border border-indigo-900/40 text-indigo-400 group-hover:scale-110 transition-transform">
@@ -190,7 +207,7 @@ export default function BankHomePage() {
         </button>
 
         <button
-          onClick={() => router.push('/app/bank/add-payee')}
+          onClick={() => router.push('/bank/add-payee')}
           className="group bg-slate-950/60 hover:bg-indigo-950/15 border border-slate-850 hover:border-indigo-500/50 p-4 rounded-2xl flex flex-col justify-between items-start text-left transition-all duration-300 active:scale-[0.97] hover:shadow-lg hover:shadow-indigo-950/5 cursor-pointer"
         >
           <div className="p-2.5 rounded-xl bg-indigo-950/80 border border-indigo-900/40 text-indigo-400 group-hover:scale-110 transition-transform">
@@ -222,7 +239,7 @@ export default function BankHomePage() {
                     <ArrowUpRight className={cn("w-4 h-4", tx.verdict === 'block' && "rotate-45")} />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                    <div className="text-xs font-bold text-slate-200 flex items-center gap-1.5 font-sans">
                       {tx.payeeName}
                       {tx.verdict === 'block' && (
                         <span className="text-[8px] bg-red-950/80 border border-red-900/30 text-red-400 px-1 py-0.2 rounded font-mono font-medium">

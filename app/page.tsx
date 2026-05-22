@@ -63,7 +63,7 @@ export default function SimulationHubPage() {
 
         {/* CARD 2: ATTACKER DASHBOARD */}
         <button
-          onClick={() => router.push('/bank')} // redirect to bank page for now, or just alert ready
+          onClick={() => router.push('/attacker')}
           className="group relative bg-slate-900/40 border border-slate-850 hover:border-red-500/50 p-6 rounded-3xl text-left transition-all duration-300 hover:shadow-2xl hover:shadow-red-950/10 active:scale-[0.98] cursor-pointer flex flex-col justify-between min-h-[220px]"
         >
           {/* Accent glow on hover */}

@@ -2,13 +2,15 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from '../SessionContext';
-import { ChevronLeft, Plus, AlertTriangle, ShieldCheck, ShieldAlert, Sparkles, HelpCircle, Lock } from 'lucide-react';
+import { useSession } from '@/lib/session';
+import { buildEvent } from '@/lib/telemetry';
+import { submitEvent } from '@/lib/mock-api';
+import { ChevronLeft, Plus, AlertTriangle, ShieldCheck, ShieldAlert, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function BankAddPayeePage() {
   const router = useRouter();
-  const { userId, submitBankEvent, addLocalPayee } = useSession();
+  const { userId, sessionId, sessionStartMs, precedingEvents, addAssessment, pushEvent, addLocalPayee } = useSession();
   const [mounted, setMounted] = useState(false);
 
   // Form states
@@ -37,7 +39,7 @@ export default function BankAddPayeePage() {
   useEffect(() => {
     setMounted(true);
     if (!userId) {
-      router.push('/app/bank');
+      router.push('/bank');
     }
   }, [userId]);
 
@@ -86,16 +88,28 @@ export default function BankAddPayeePage() {
       ? Math.round(keystrokeDelays.reduce((a, b) => a + b, 0) / keystrokeDelays.length)
       : undefined;
 
-    const dummyPayeeId = 'payee_user_' + Math.random().toString(36).substring(2, 7);
+    const dummyPayeeId = 'payee_user_' + Math.random().toString(36).substring(2, 8);
 
     try {
+      // Build high fidelity event payload
+      const event = buildEvent(
+        'add_payee',
+        userId,
+        sessionId,
+        sessionStartMs,
+        precedingEvents,
+        {
+          payeeId: dummyPayeeId,
+          payeeName,
+          typingSpeedMs: avgTypingSpeed,
+          inputMethod,
+        } as any
+      );
+
       // Execute security assessment
-      const assessment = await submitBankEvent('add_payee', {
-        payeeId: dummyPayeeId,
-        payeeName,
-        typingSpeedMs: avgTypingSpeed,
-        inputMethod,
-      });
+      const assessment = await submitEvent(event);
+      addAssessment(event as any, assessment);
+      pushEvent('add_payee');
 
       // Handle risk verdicts
       if (assessment.verdict === 'block') {
@@ -121,7 +135,7 @@ export default function BankAddPayeePage() {
     e.preventDefault();
     const expected = `WHITELIST ${payeeName.toUpperCase()}`;
     if (challengeInput.trim().toUpperCase() === expected) {
-      const dummyPayeeId = 'payee_user_' + Math.random().toString(36).substring(2, 7);
+      const dummyPayeeId = 'payee_user_' + Math.random().toString(36).substring(2, 8);
       addLocalPayee(dummyPayeeId, payeeName);
       setVerdictType('success');
     } else {
@@ -137,7 +151,7 @@ export default function BankAddPayeePage() {
   const handleHardChallengeVerify = (e: React.FormEvent) => {
     e.preventDefault();
     if (challengeOtp === '888888') {
-      const dummyPayeeId = 'payee_user_' + Math.random().toString(36).substring(2, 7);
+      const dummyPayeeId = 'payee_user_' + Math.random().toString(36).substring(2, 8);
       addLocalPayee(dummyPayeeId, payeeName);
       setVerdictType('success');
     } else {
@@ -188,8 +202,8 @@ export default function BankAddPayeePage() {
         </div>
 
         <button
-          onClick={() => router.push('/app/bank/home')}
-          className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 rounded-xl font-bold hover:shadow-lg active:scale-[0.98] transition-all cursor-pointer"
+          onClick={() => router.push('/bank/home')}
+          className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 rounded-xl font-bold hover:shadow-lg active:scale-[0.98] transition-all cursor-pointer text-sm"
         >
           Return to Dashboard
         </button>
@@ -221,8 +235,8 @@ export default function BankAddPayeePage() {
         </div>
 
         <button
-          onClick={() => router.push('/app/bank/home')}
-          className="w-full bg-red-900/30 text-red-300 border border-red-800/80 py-3.5 rounded-xl font-semibold hover:bg-red-900/50 hover:text-white transition-all cursor-pointer"
+          onClick={() => router.push('/bank/home')}
+          className="w-full bg-red-900/30 text-red-300 border border-red-800/80 py-3.5 rounded-xl font-semibold hover:bg-red-900/50 hover:text-white transition-all cursor-pointer text-sm"
         >
           Return to Dashboard
         </button>
@@ -372,7 +386,7 @@ export default function BankAddPayeePage() {
       {/* Top Navbar */}
       <div className="flex items-center gap-3">
         <button
-          onClick={() => router.push('/app/bank/home')}
+          onClick={() => router.push('/bank/home')}
           className="p-2 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-850 text-slate-400 hover:text-white transition-colors cursor-pointer"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -465,7 +479,7 @@ export default function BankAddPayeePage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white py-3.5 rounded-xl font-bold hover:shadow-lg active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none flex justify-center items-center gap-2 cursor-pointer mt-8"
+          className="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white py-3.5 rounded-xl font-bold hover:shadow-lg active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none flex justify-center items-center gap-2 cursor-pointer mt-8 text-sm"
         >
           {isSubmitting ? (
             <span className="w-5 h-5 rounded-full border-2 border-white/30 border-t-white animate-spin" />

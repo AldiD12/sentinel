@@ -2,14 +2,16 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from './SessionContext';
+import { useSession } from '@/lib/session';
+import { buildEvent } from '@/lib/telemetry';
+import { submitEvent } from '@/lib/mock-api';
 import { USERS } from '@/lib/users';
 import { Shield, KeyRound, Monitor, Smartphone, Laptop, AlertTriangle, Fingerprint, Lock, ShieldAlert, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function BankLoginPage() {
   const router = useRouter();
-  const { login, logout, userId: activeUserId } = useSession();
+  const { setUser, sessionId, sessionStartMs, precedingEvents, addAssessment, pushEvent } = useSession();
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [password, setPassword] = useState('');
   
@@ -30,12 +32,9 @@ export default function BankLoginPage() {
   // Focus ref for telemetry input
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Clear previous session when loading the login screen
-  useEffect(() => {
-    logout();
-  }, []);
-
   const handleSelectUser = (uid: string) => {
+    // Phase 1 click calls setUser(userId)
+    setUser(uid);
     setSelectedUser(uid);
     setPassword('');
     setKeystrokeDelays([]);
@@ -87,10 +86,23 @@ export default function BankLoginPage() {
       : undefined;
 
     try {
+      // Build the SentinelEvent telemetry payload
+      const event = buildEvent(
+        'login',
+        selectedUser,
+        sessionId,
+        sessionStartMs,
+        precedingEvents,
+        {
+          inputMethod,
+          typingSpeedMs: avgTypingSpeed,
+        }
+      );
+
       // Execute the login call
-      const assessment = await login(selectedUser, {
-        // Feed custom biometric stats to the engine
-      });
+      const assessment = await submitEvent(event);
+      addAssessment(event as any, assessment);
+      pushEvent('login');
 
       // Assess detection engine verdict
       if (assessment.verdict === 'block') {
@@ -103,7 +115,7 @@ export default function BankLoginPage() {
         setIsSubmitting(false);
       } else {
         // Access granted
-        router.push('/app/bank/home');
+        router.push('/bank/home');
       }
     } catch (err: any) {
       setErrorMsg(err.message || 'Login authentication failed.');
@@ -115,7 +127,7 @@ export default function BankLoginPage() {
     e.preventDefault();
     if (challengeCode === '1234') {
       // Correct verification code, route to home
-      router.push('/app/bank/home');
+      router.push('/bank/home');
     } else {
       setChallengeAttempts(prev => prev + 1);
       if (challengeAttempts >= 1) {
