@@ -39,7 +39,9 @@ export interface SentinelEvent {
   type: EventType;
   timestamp?: number;
   ip: string;
-  country: string;
+  country?: string;
+  geoCountry?: string;
+  geoCity?: string;
   asn?: string;
   userAgent: string;
   deviceFingerprint: string;

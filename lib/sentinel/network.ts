@@ -28,14 +28,14 @@ function detectUnknownNetwork(event: SentinelEvent, baseline: UserBaseline): Sig
 }
 
 // +35 — country differs from user's registered home country
-function detectImpossibleTravel(event: SentinelEvent, baseline: UserBaseline): Signal | null {
-  if (event.country === baseline.usualCountry) return null;
+function detectImpossibleTravel(event: SentinelEvent, baseline: UserBaseline, country: string): Signal | null {
+  if (country === baseline.usualCountry) return null;
 
   return {
     name: 'impossible_travel',
     layer: 'network',
     weight: 35,
-    reason: `Request from "${event.country}" but user "${baseline.userId}" home country is "${baseline.usualCountry}"`,
+    reason: `Request from "${country}" but user "${baseline.userId}" home country is "${baseline.usualCountry}"`,
   };
 }
 
@@ -54,22 +54,25 @@ function detectRequestFlood(event: SentinelEvent, _baseline: UserBaseline): Sign
 }
 
 // +25 — origin country is on the high-risk jurisdiction list
-function detectHighRiskGeo(event: SentinelEvent, _baseline: UserBaseline): Signal | null {
-  if (!HIGH_RISK_COUNTRIES.has(event.country)) return null;
+function detectHighRiskGeo(event: SentinelEvent, _baseline: UserBaseline, country: string): Signal | null {
+  if (!HIGH_RISK_COUNTRIES.has(country)) return null;
 
   return {
     name: 'high_risk_geo',
     layer: 'network',
     weight: 25,
-    reason: `Origin country "${event.country}" is on the high-risk jurisdiction list (${Array.from(HIGH_RISK_COUNTRIES).join(', ')})`,
+    reason: `Origin country "${country}" is on the high-risk jurisdiction list (${Array.from(HIGH_RISK_COUNTRIES).join(', ')})`,
   };
 }
 
 export function networkDetectors(event: SentinelEvent, baseline: UserBaseline): Signal[] {
+  // Normalise country — frontend may send geoCountry or geoCity instead of country
+  const country = event.country ?? event.geoCountry ?? event.geoCity ?? 'unknown';
+
   return [
     detectUnknownNetwork(event, baseline),
-    detectImpossibleTravel(event, baseline),
+    detectImpossibleTravel(event, baseline, country),
     detectRequestFlood(event, baseline),
-    detectHighRiskGeo(event, baseline),
+    detectHighRiskGeo(event, baseline, country),
   ].filter((s): s is Signal => s !== null);
 }
