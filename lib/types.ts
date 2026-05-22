@@ -59,6 +59,8 @@ export interface RiskAssessment {
   verdict: Verdict;
   signals: Signal[];
   latencyMs: number;
+  overridden?: boolean;
+  overrideNote?: string;
 }
 
 // ProcessedEvent is what gets stored and streamed — combines raw event + assessment
