@@ -268,24 +268,23 @@ export default function SecurityOperationsDashboard() {
     const matchesUser = 
       userFilter === 'all' || 
       e.userId === userFilter;
-
     return matchesSearch && matchesVerdict && matchesUser;
   });
 
   return (
-    <div className="dark min-h-screen bg-gray-950 text-gray-100 font-sans selection:bg-indigo-500 selection:text-white flex flex-col p-4 md:p-6 relative overflow-hidden">
+    <div className="dark min-h-screen bg-[#030914] text-slate-100 font-sans selection:bg-blue-500 selection:text-white flex flex-col p-4 md:p-6 relative overflow-hidden">
       
-      {/* Background ambient network glows */}
-      <div className="absolute top-0 right-1/4 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
+      {/* Background Soft Professional Gradients */}
+      <div className="absolute top-0 right-1/4 -translate-y-1/2 w-[600px] h-[600px] bg-blue-900/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 translate-y-1/2 w-[500px] h-[500px] bg-slate-900/10 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Real-time Notification Banner */}
       {notification && (
         <div className={cn(
-          "fixed top-6 right-6 z-50 px-5 py-3 rounded-xl shadow-2xl border flex items-center gap-3 animate-slide-up text-sm font-mono",
-          notification.type === 'success' && "bg-emerald-950 border-emerald-500/40 text-emerald-400",
-          notification.type === 'error' && "bg-red-950 border-red-500/40 text-red-400",
-          notification.type === 'info' && "bg-indigo-950 border-indigo-500/40 text-indigo-400"
+          "fixed top-6 right-6 z-50 px-5 py-3.5 rounded-2xl shadow-2xl border flex items-center gap-3 animate-slide-up text-sm font-mono",
+          notification.type === 'success' && "bg-[#0b1c2e] border-emerald-500/30 text-emerald-400",
+          notification.type === 'error' && "bg-[#180a0a] border-red-500/30 text-red-400",
+          notification.type === 'info' && "bg-[#0c1424] border-blue-500/30 text-blue-400"
         )}>
           {notification.type === 'success' && <CheckCircle className="w-5 h-5" />}
           {notification.type === 'error' && <XCircle className="w-5 h-5 animate-bounce" />}
@@ -298,14 +297,14 @@ export default function SecurityOperationsDashboard() {
       <div className="max-w-7xl mx-auto w-full z-10 space-y-6 flex flex-col flex-grow">
         
         {/* TOP BAR */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-900 border border-gray-800 p-5 rounded-2xl">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#081225] border border-slate-800/80 p-5 rounded-2xl">
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3.5">
             <Button
               variant="outline"
               size="icon"
               onClick={() => router.push('/')}
-              className="bg-gray-950 hover:bg-gray-800 border-gray-800 text-slate-400 hover:text-white"
+              className="bg-slate-950 hover:bg-slate-850 border-slate-800 text-slate-400 hover:text-white"
               title="Return to Simulation Hub"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -313,17 +312,17 @@ export default function SecurityOperationsDashboard() {
             <div>
               <div className="flex items-center gap-2">
                 <span className={cn(
-                  "w-2 h-2 rounded-full",
+                  "w-1.5 h-1.5 rounded-full",
                   connectionStatus === 'connected' && "bg-emerald-500 animate-pulse",
                   connectionStatus === 'connecting' && "bg-amber-500 animate-pulse",
                   connectionStatus === 'disconnected' && "bg-red-500"
                 )} />
-                <span className="text-[10px] font-bold font-mono tracking-widest text-slate-400 uppercase">
-                  {connectionStatus === 'connected' ? 'LIVE MONITOR' : connectionStatus === 'connecting' ? 'SYNCING...' : 'DISCONNECTED'}
+                <span className="text-[9px] font-bold font-mono tracking-widest text-slate-400 uppercase">
+                  {connectionStatus === 'connected' ? 'LIVE SECURITY SYNC' : connectionStatus === 'connecting' ? 'SYNCING...' : 'DISCONNECTED'}
                 </span>
               </div>
-              <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight leading-none mt-1 font-mono">
-                SENTINEL SOC
+              <h1 className="text-xl md:text-2xl font-extrabold text-white tracking-tight leading-none mt-1.5">
+                Sentinel Core SOC Console
               </h1>
             </div>
           </div>
@@ -331,38 +330,38 @@ export default function SecurityOperationsDashboard() {
           {/* Stats Bar */}
           <div className="grid grid-cols-2 md:flex items-center gap-3 w-full md:w-auto">
             {/* Allowed Card */}
-            <Card className="bg-gray-950 border-gray-800 px-3.5 py-1.5 rounded-xl flex items-center gap-2.5 min-w-[100px] text-gray-100">
-              <div className="w-1.5 h-7 rounded-sm bg-emerald-500" />
+            <Card className="bg-[#050d1a] border-slate-800/80 px-4 py-2.5 rounded-xl flex items-center gap-3 min-w-[110px] text-slate-100 shadow-sm">
+              <div className="w-1 h-7 rounded-full bg-emerald-500" />
               <div>
-                <div className="text-[9px] font-bold text-slate-500 font-mono">ALLOWED</div>
-                <div className="text-sm font-extrabold font-mono text-emerald-400 leading-tight">{stats.allowed}</div>
+                <div className="text-[8px] font-bold text-slate-500 font-mono tracking-wider">APPROVED</div>
+                <div className="text-base font-black font-mono text-emerald-400 leading-tight">{stats.allowed}</div>
               </div>
             </Card>
 
             {/* Challenged Card */}
-            <Card className="bg-gray-950 border-gray-800 px-3.5 py-1.5 rounded-xl flex items-center gap-2.5 min-w-[100px] text-gray-100">
-              <div className="w-1.5 h-7 rounded-sm bg-amber-500" />
+            <Card className="bg-[#050d1a] border-slate-800/80 px-4 py-2.5 rounded-xl flex items-center gap-3 min-w-[110px] text-slate-100 shadow-sm">
+              <div className="w-1 h-7 rounded-full bg-amber-500" />
               <div>
-                <div className="text-[9px] font-bold text-slate-500 font-mono">CHALLENGED</div>
-                <div className="text-sm font-extrabold font-mono text-amber-400 leading-tight">{stats.challenged}</div>
+                <div className="text-[8px] font-bold text-slate-500 font-mono tracking-wider">CHALLENGED</div>
+                <div className="text-base font-black font-mono text-amber-400 leading-tight">{stats.challenged}</div>
               </div>
             </Card>
 
             {/* Blocked Card */}
-            <Card className="bg-gray-950 border-gray-800 px-3.5 py-1.5 rounded-xl flex items-center gap-2.5 min-w-[100px] text-gray-100">
-              <div className="w-1.5 h-7 rounded-sm bg-red-500" />
+            <Card className="bg-[#050d1a] border-slate-800/80 px-4 py-2.5 rounded-xl flex items-center gap-3 min-w-[110px] text-slate-100 shadow-sm">
+              <div className="w-1 h-7 rounded-full bg-red-500" />
               <div>
-                <div className="text-[9px] font-bold text-slate-500 font-mono">BLOCKED</div>
-                <div className="text-sm font-extrabold font-mono text-red-400 leading-tight">{stats.blocked}</div>
+                <div className="text-[8px] font-bold text-slate-500 font-mono tracking-wider">BLOCKED</div>
+                <div className="text-base font-black font-mono text-red-400 leading-tight">{stats.blocked}</div>
               </div>
             </Card>
 
             {/* Latency Card */}
-            <Card className="bg-gray-950 border-gray-800 px-3.5 py-1.5 rounded-xl flex items-center gap-2.5 min-w-[110px] text-gray-100">
-              <div className="w-1.5 h-7 rounded-sm bg-blue-500" />
+            <Card className="bg-[#050d1a] border-slate-800/80 px-4 py-2.5 rounded-xl flex items-center gap-3 min-w-[110px] text-slate-100 shadow-sm">
+              <div className="w-1 h-7 rounded-full bg-blue-500" />
               <div>
-                <div className="text-[9px] font-bold text-slate-500 font-mono">AVG LATENCY</div>
-                <div className="text-sm font-extrabold font-mono text-blue-400 leading-tight">
+                <div className="text-[8px] font-bold text-slate-500 font-mono tracking-wider">AVG RESPONSE</div>
+                <div className="text-base font-black font-mono text-blue-400 leading-tight">
                   {stats.avgLatency || 0}<span className="text-[10px] font-normal text-slate-500 ml-0.5">ms</span>
                 </div>
               </div>
@@ -372,38 +371,38 @@ export default function SecurityOperationsDashboard() {
         </div>
 
         {/* MIDDLE ACTIONS: Search & Filters */}
-        <div className="grid md:grid-cols-12 gap-3.5 items-center bg-gray-900/60 border border-gray-800/80 p-4 rounded-xl">
+        <div className="grid md:grid-cols-12 gap-3.5 items-center bg-[#081225]/40 border border-slate-800/60 p-4 rounded-xl">
           <div className="md:col-span-6 relative">
             <input 
-              type="text"
-              placeholder="Search threat indicators, scores, users, IPs, event IDs..."
+              type="text" 
+              placeholder="Filter by threat indicators, risk factors, users, geolocation subnets, event IDs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-950 border border-gray-800 rounded-lg py-2 pl-10 pr-4 text-xs text-slate-200 placeholder-slate-500 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20"
+              className="w-full bg-[#050d1a] border border-slate-800/80 rounded-lg py-2 pl-10 pr-4 text-xs text-slate-200 placeholder-slate-500 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
             />
             <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
           </div>
 
           <div className="md:col-span-3 flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold text-slate-400 shrink-0 uppercase">Verdict:</span>
+            <span className="text-[9px] font-mono font-bold text-slate-400 shrink-0 uppercase tracking-wider">Verdict:</span>
             <select 
               value={verdictFilter}
               onChange={(e) => setVerdictFilter(e.target.value)}
-              className="w-full bg-gray-950 border border-gray-800 rounded-lg py-1.5 px-3 text-xs font-medium text-slate-300 cursor-pointer outline-none focus:border-indigo-500"
+              className="w-full bg-[#050d1a] border border-slate-800/80 rounded-lg py-1.5 px-3 text-xs font-semibold text-slate-350 cursor-pointer outline-none focus:border-blue-500"
             >
               <option value="all">ALL VERDICTS</option>
-              <option value="allow">ALLOWS ONLY</option>
-              <option value="challenge">CHALLENGES ONLY</option>
-              <option value="block">BLOCKS ONLY</option>
+              <option value="allow">APPROVED ONLY</option>
+              <option value="challenge">CHALLENGED ONLY</option>
+              <option value="block">BLOCKED ONLY</option>
             </select>
           </div>
 
           <div className="md:col-span-3 flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold text-slate-400 shrink-0 uppercase">Profile:</span>
+            <span className="text-[9px] font-mono font-bold text-slate-400 shrink-0 uppercase tracking-wider">Account:</span>
             <select 
               value={userFilter}
               onChange={(e) => setUserFilter(e.target.value)}
-              className="w-full bg-gray-950 border border-gray-800 rounded-lg py-1.5 px-3 text-xs font-medium text-slate-300 cursor-pointer outline-none focus:border-indigo-500"
+              className="w-full bg-[#050d1a] border border-slate-800/80 rounded-lg py-1.5 px-3 text-xs font-semibold text-slate-350 cursor-pointer outline-none focus:border-blue-500"
             >
               <option value="all">ALL CUSTOMERS</option>
               {Object.values(USERS).map(u => (
@@ -417,18 +416,18 @@ export default function SecurityOperationsDashboard() {
         <div className="grid lg:grid-cols-10 gap-6 items-stretch flex-grow min-h-[500px]">
           
           {/* LEFT: 60% EVENT STREAM TABLE */}
-          <Card className="lg:col-span-6 bg-gray-900 border-gray-800 flex flex-col h-[560px] overflow-hidden text-gray-100">
-            <CardHeader className="flex flex-row justify-between items-center border-b border-gray-850 py-3 px-4">
+          <Card className="lg:col-span-6 bg-[#081225]/80 border-slate-800/80 flex flex-col h-[560px] overflow-hidden text-slate-100 shadow-sm">
+            <CardHeader className="flex flex-row justify-between items-center border-b border-slate-800/60 py-3.5 px-5">
               <div>
-                <CardTitle className="text-xs font-bold font-mono uppercase tracking-wider text-slate-200 flex items-center gap-2">
-                  <Terminal className="w-4 h-4 text-indigo-400" /> Assessment Ingestion Stream
+                <CardTitle className="text-xs font-extrabold font-mono uppercase tracking-wider text-slate-200 flex items-center gap-2">
+                  <Terminal className="w-4 h-4 text-blue-400" /> Security Telemetry Ingestion Stream
                 </CardTitle>
-                <CardDescription className="text-[10px] font-mono text-slate-500 mt-0.5">
-                  REAL-TIME NETWORK, BEHAVIORAL & TRANSACTIONAL LOGS
+                <CardDescription className="text-[9px] font-mono text-slate-500 mt-0.5">
+                  REAL-TIME NETWORK, BIOMETRIC & TRANSACTIONAL EVENT RECORDS
                 </CardDescription>
               </div>
-              <Badge variant="outline" className="text-[9px] font-mono border-gray-800 text-slate-400 bg-gray-950">
-                {filteredEvents.length} OF {events.length} EVENTS
+              <Badge variant="outline" className="text-[8px] font-mono border-slate-800 text-slate-400 bg-slate-950/80">
+                {filteredEvents.length} OF {events.length} AUDITED EVENTS
               </Badge>
             </CardHeader>
 
@@ -437,18 +436,18 @@ export default function SecurityOperationsDashboard() {
               {filteredEvents.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-slate-500 italic select-none space-y-2 py-24">
                   <Activity className="w-8 h-8 text-slate-700 animate-pulse" />
-                  <p className="text-xs font-mono">NO THREAT PATTERNS DETECTED</p>
+                  <p className="text-xs font-mono uppercase tracking-wider">No threat anomalies registered</p>
                 </div>
               ) : (
                 <Table>
-                  <TableHeader className="bg-gray-950/80 sticky top-0 z-20 border-b border-gray-800">
-                    <TableRow className="border-gray-800 hover:bg-transparent">
-                      <TableHead className="text-[9px] font-bold font-mono text-slate-400 px-3 uppercase h-8">Time</TableHead>
-                      <TableHead className="text-[9px] font-bold font-mono text-slate-400 px-2 uppercase h-8">User</TableHead>
-                      <TableHead className="text-[9px] font-bold font-mono text-slate-400 px-2 uppercase h-8">Type</TableHead>
-                      <TableHead className="text-[9px] font-bold font-mono text-slate-400 px-2 uppercase h-8 text-center">Score</TableHead>
-                      <TableHead className="text-[9px] font-bold font-mono text-slate-400 px-2 uppercase h-8">Verdict</TableHead>
-                      <TableHead className="text-[9px] font-bold font-mono text-slate-400 px-3 uppercase h-8 text-right">Signals</TableHead>
+                  <TableHeader className="bg-slate-950/60 sticky top-0 z-20 border-b border-slate-850">
+                    <TableRow className="border-slate-850 hover:bg-transparent">
+                      <TableHead className="text-[8px] font-bold font-mono text-slate-400 px-4 uppercase h-9">Time</TableHead>
+                      <TableHead className="text-[8px] font-bold font-mono text-slate-400 px-3 uppercase h-9">User Account</TableHead>
+                      <TableHead className="text-[8px] font-bold font-mono text-slate-400 px-3 uppercase h-9">Event Type</TableHead>
+                      <TableHead className="text-[8px] font-bold font-mono text-slate-400 px-3 uppercase h-9 text-center">Score</TableHead>
+                      <TableHead className="text-[8px] font-bold font-mono text-slate-400 px-3 uppercase h-9">Verdict</TableHead>
+                      <TableHead className="text-[8px] font-bold font-mono text-slate-400 px-4 uppercase h-9 text-right">Signals</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -457,60 +456,60 @@ export default function SecurityOperationsDashboard() {
                       const scoreStyle = getScoreDetails(evt.score);
                       return (
                         <TableRow
-                          key={evt.eventId}
-                          onClick={() => {
-                            setSelectedEvent(evt);
-                            setIsOverriding(false);
-                          }}
-                          className={cn(
-                            getRowClass(evt.verdict, isSelected),
-                            "border-gray-800/60"
-                          )}
+                           key={evt.eventId}
+                           onClick={() => {
+                             setSelectedEvent(evt);
+                             setIsOverriding(false);
+                           }}
+                           className={cn(
+                             getRowClass(evt.verdict, isSelected),
+                             "border-slate-850/60 transition-colors"
+                           )}
                         >
                           {/* Time Column */}
-                          <TableCell className="font-mono text-[10px] text-slate-400 px-3 py-2.5">
-                            <div className="flex items-center gap-1">
-                              <Clock className="w-3 h-3 text-slate-600 shrink-0" />
+                          <TableCell className="font-mono text-[9px] text-slate-400 px-4 py-3">
+                            <div className="flex items-center gap-1.5">
+                              <Clock className="w-3 h-3 text-slate-500 shrink-0" />
                               <span>{evt.timestamp ? new Date(evt.timestamp).toLocaleTimeString() : 'N/A'}</span>
                             </div>
                             {evt.overridden && (
-                              <Badge className="bg-emerald-950 border border-emerald-900/50 text-emerald-400 px-1 py-0.2 rounded text-[7px] font-mono font-bold mt-1">
-                                OVERRIDDEN
+                              <Badge className="bg-emerald-950/30 border border-emerald-800/40 text-emerald-400 px-1.5 py-0.2 rounded text-[7px] font-mono font-bold mt-1 tracking-wide uppercase">
+                                Overridden
                               </Badge>
                             )}
                           </TableCell>
 
                           {/* User Column */}
-                          <TableCell className="px-2 py-2.5 font-sans font-bold text-slate-200">
-                            <div className="max-w-[90px] truncate" title={getUserName(evt.userId)}>
+                          <TableCell className="px-3 py-3 font-sans font-bold text-slate-200">
+                            <div className="max-w-[100px] truncate" title={getUserName(evt.userId)}>
                               {getUserName(evt.userId)}
                             </div>
-                            <div className="text-[8px] font-mono text-slate-500 font-normal">
+                            <div className="text-[8px] font-mono text-slate-500 font-normal mt-0.5">
                               {evt.userId}
                             </div>
                           </TableCell>
 
                           {/* Type Column */}
-                          <TableCell className="px-2 py-2.5 font-mono">
-                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-gray-950 border border-gray-850 text-indigo-400 uppercase">
+                          <TableCell className="px-3 py-3 font-mono">
+                            <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-slate-950 border border-slate-850 text-blue-400 uppercase tracking-wider">
                               {evt.type.replace('_', ' ')}
                             </span>
                           </TableCell>
 
                           {/* Score Column */}
-                          <TableCell className="px-2 py-2.5 text-center">
-                            <Badge className={cn(scoreStyle.badge, "font-mono font-bold text-xs h-6 w-8 justify-center rounded-md border")}>
+                          <TableCell className="px-3 py-3 text-center">
+                            <Badge className={cn(scoreStyle.badge, "font-mono font-bold text-xs h-6 w-9 justify-center rounded-md border")}>
                               {evt.score}
                             </Badge>
                           </TableCell>
 
                           {/* Verdict Column */}
-                          <TableCell className="px-2 py-2.5">
+                          <TableCell className="px-3 py-3">
                             {getVerdictBadge(evt.verdict)}
                           </TableCell>
 
                           {/* Signals Count Column */}
-                          <TableCell className="px-3 py-2.5 text-right font-mono text-[10px] text-slate-400">
+                          <TableCell className="px-4 py-3 text-right font-mono text-[10px] text-slate-400">
                             {evt.signals?.length || 0}
                           </TableCell>
                         </TableRow>
@@ -523,15 +522,15 @@ export default function SecurityOperationsDashboard() {
           </Card>
 
           {/* RIGHT: 40% EVENT DETAIL INSPECTOR */}
-          <Card className="lg:col-span-4 bg-gray-900 border-gray-800 flex flex-col h-[560px] overflow-hidden text-gray-100">
-            <CardHeader className="border-b border-gray-850 py-3 px-4 flex flex-row items-center gap-2">
-              <Shield className="w-4 h-4 text-indigo-400 shrink-0" />
+          <Card className="lg:col-span-4 bg-[#081225]/80 border-slate-800/80 flex flex-col h-[560px] overflow-hidden text-slate-100 shadow-sm">
+            <CardHeader className="border-b border-slate-800/60 py-3 px-4 flex flex-row items-center gap-2">
+              <Shield className="w-4 h-4 text-blue-400 shrink-0" />
               <div>
                 <CardTitle className="text-xs font-bold font-mono uppercase tracking-wider text-slate-200">
-                  Threat Analytics Inspector
+                  Biometric Telemetry Inspector
                 </CardTitle>
-                <CardDescription className="text-[10px] font-mono text-slate-500 mt-0.5">
-                  DEEP LAYER ATTRIBUTE INVESTIGATION
+                <CardDescription className="text-[9px] font-mono text-slate-500 mt-0.5">
+                  DEEP LAYER ATTRIBUTE & COORDINATES DIAGNOSTICS
                 </CardDescription>
               </div>
             </CardHeader>
@@ -539,81 +538,81 @@ export default function SecurityOperationsDashboard() {
             <CardContent className="p-4 flex-grow overflow-y-auto max-h-[460px] flex flex-col justify-between">
               {!selectedEvent ? (
                 <div className="flex-grow flex flex-col items-center justify-center text-slate-500 italic text-center p-8 select-none space-y-3">
-                  <div className="w-12 h-12 rounded-full bg-gray-950 border border-gray-850 flex items-center justify-center text-slate-700 animate-pulse">
-                    <Shield className="w-6 h-6" />
+                  <div className="w-12 h-12 rounded-full bg-slate-950 border border-slate-850 flex items-center justify-center text-slate-600 animate-pulse">
+                    <Shield className="w-6 h-6 text-slate-400" />
                   </div>
-                  <p className="text-[10px] font-mono max-w-[200px] uppercase leading-relaxed">
-                    Select an event row from the stream table to inspect its threat signature vectors
+                  <p className="text-[9px] font-mono max-w-[220px] uppercase leading-relaxed text-slate-400">
+                    Select a transaction record from the stream feed to inspect its telemetry coordinate vectors
                   </p>
                 </div>
               ) : (
                 <div className="space-y-4 flex-grow flex flex-col justify-between h-full">
                   <div className="space-y-4">
                     {/* Top Overview Panel */}
-                    <div className="bg-gray-950 border border-gray-800 p-4 rounded-xl flex items-center justify-between gap-4">
+                    <div className="bg-slate-950/80 border border-slate-850 p-4 rounded-xl flex items-center justify-between gap-4">
                       <div className="space-y-1 max-w-[60%]">
-                        <span className="text-[8px] font-bold font-mono bg-gray-900 border border-gray-850 text-indigo-400 px-2 py-0.5 rounded uppercase">
+                        <span className="text-[8px] font-bold font-mono bg-slate-900 border border-slate-850 text-blue-400 px-2 py-0.5 rounded uppercase tracking-wider">
                           {selectedEvent.type.replace('_', ' ')}
                         </span>
-                        <h3 className="text-sm font-bold text-white mt-1.5 font-sans leading-none truncate" title={getUserName(selectedEvent.userId)}>
+                        <h3 className="text-sm font-extrabold text-white mt-1.5 font-sans leading-none truncate" title={getUserName(selectedEvent.userId)}>
                           {getUserName(selectedEvent.userId)}
                         </h3>
-                        <p className="text-[10px] text-slate-500 font-mono truncate">
-                          ID: {selectedEvent.userId}
+                        <p className="text-[9px] text-slate-500 font-mono truncate">
+                          UID: {selectedEvent.userId}
                         </p>
                       </div>
 
                       <div className="text-center">
                         <div className={cn(
-                          "text-3xl font-extrabold font-mono border px-3 py-0.5 rounded-xl leading-none",
+                          "text-2xl font-extrabold font-mono border px-3 py-0.5 rounded-xl leading-none",
                           getScoreDetails(selectedEvent.score).text,
                           getScoreDetails(selectedEvent.score).bg,
                           getScoreDetails(selectedEvent.score).border
                         )}>
                           {selectedEvent.score}
                         </div>
-                        <div className="text-[8px] font-bold text-slate-500 font-mono mt-1 uppercase">Threat Score</div>
+                        <div className="text-[8px] font-bold text-slate-500 font-mono mt-1.5 uppercase tracking-wider">Risk Score</div>
                       </div>
                     </div>
 
                     {/* Verdict & Latency Details */}
-                    <div className="flex justify-between items-center bg-gray-950/40 border border-gray-800/60 px-3.5 py-2.5 rounded-xl">
+                    <div className="flex justify-between items-center bg-slate-950/30 border border-slate-850/60 px-3.5 py-2.5 rounded-xl">
                       <div className="space-y-0.5">
-                        <div className="text-[8px] font-mono text-slate-500 uppercase font-bold">Evaluated Verdict</div>
+                        <div className="text-[8px] font-mono text-slate-500 uppercase font-bold tracking-wider">SafeShield™ Verdict</div>
                         {getVerdictBadge(selectedEvent.verdict)}
                       </div>
                       <div className="text-right">
-                        <div className="text-[8px] font-mono text-slate-500 uppercase font-bold">Assessment Latency</div>
-                        <span className="text-xs font-mono font-bold text-blue-400 flex items-center justify-end gap-1 mt-0.5">
-                          <Zap className="w-3.5 h-3.5 fill-blue-500/20" /> Detected in {selectedEvent.latencyMs}ms
+                        <div className="text-[8px] font-mono text-slate-500 uppercase font-bold tracking-wider">Ingestion Time</div>
+                        <span className="text-xs font-mono font-bold text-blue-405 flex items-center justify-end gap-1 mt-1 leading-none">
+                          <Zap className="w-3.5 h-3.5 fill-blue-500/20 text-blue-400" /> Audited in {selectedEvent.latencyMs}ms
                         </span>
                       </div>
                     </div>
 
                     {/* Overridden state banner */}
                     {selectedEvent.overridden ? (
-                      <div className="bg-emerald-950/20 border border-emerald-900/30 p-3.5 rounded-xl space-y-1 font-mono text-[10px] text-emerald-400">
-                        <div className="flex items-center gap-1.5 font-bold">
+                      <div className="bg-emerald-950/20 border border-emerald-900/30 p-3 rounded-xl space-y-1 font-mono text-[10px] text-emerald-400">
+                        <div className="flex items-center gap-1.5 font-bold tracking-wide">
                           <UserCheck className="w-4 h-4 shrink-0 text-emerald-400" />
-                          <span>MARKED AS FALSE POSITIVE</span>
+                          <span>ANALYST WHITELIST OVERRIDE ACTIVE</span>
                         </div>
-                        <p className="text-slate-400 leading-normal text-[9px] italic">
+                        <p className="text-slate-400 leading-normal text-[9px] italic font-sans mt-0.5">
                           Justification: "{selectedEvent.overrideNote || 'No reason specified.'}"
                         </p>
                       </div>
                     ) : (
                       /* Inlined Override justification form */
                       isOverriding && (
-                        <form onSubmit={handleOverrideSubmit} className="bg-gray-950 border border-gray-850 p-3 rounded-xl space-y-3 animate-fade-in font-mono text-[10px]">
+                        <form onSubmit={handleOverrideSubmit} className="bg-slate-950 border border-slate-850 p-3 rounded-xl space-y-3 animate-fade-in font-mono text-[10px] shadow-inner">
                           <div className="space-y-1.5">
-                            <label className="text-slate-400 font-bold uppercase block text-[9px]">
-                              False Positive Reason & Justification
+                            <label className="text-slate-400 font-bold uppercase block text-[9px] tracking-wider">
+                              Override Justification & Notes
                             </label>
                             <textarea 
                               rows={2}
                               value={overrideNote}
                               onChange={(e) => setOverrideNote(e.target.value)}
-                              className="w-full bg-gray-900 border border-gray-800 rounded-lg p-2 text-slate-200 outline-none focus:border-indigo-500 resize-none text-[10px]"
+                              className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-slate-200 outline-none focus:border-blue-500 resize-none text-[10px] leading-relaxed font-sans"
                               required
                             />
                           </div>
@@ -623,13 +622,13 @@ export default function SecurityOperationsDashboard() {
                               disabled={isSubmittingOverride}
                               className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold h-7 text-[10px]"
                             >
-                              {isSubmittingOverride ? 'Submitting...' : 'Confirm FP Whitelist'}
+                              {isSubmittingOverride ? 'Submitting Override...' : 'Confirm Whitelist Override'}
                             </Button>
                             <Button
                               type="button"
                               variant="outline"
                               onClick={() => setIsOverriding(false)}
-                              className="bg-gray-900 border-gray-800 text-slate-400 hover:bg-gray-850 hover:text-white h-7 text-[10px]"
+                              className="bg-slate-900 border-slate-800 text-slate-450 hover:bg-slate-850 hover:text-white h-7 text-[10px]"
                             >
                               Cancel
                             </Button>
@@ -639,24 +638,24 @@ export default function SecurityOperationsDashboard() {
                     )}
 
                     {/* Environment details metrics */}
-                    <div className="bg-gray-950/60 border border-gray-800/80 p-3.5 rounded-xl font-mono text-[10px] space-y-2 text-slate-300">
-                      <div className="text-slate-500 uppercase font-bold text-[8px] border-b border-gray-850 pb-1 flex justify-between">
-                        <span>Telemetry Signature Coordinates</span>
+                    <div className="bg-slate-950/60 border border-slate-850 p-3.5 rounded-xl font-mono text-[10px] space-y-2 text-slate-300 shadow-sm">
+                      <div className="text-slate-500 uppercase font-bold text-[8px] border-b border-slate-800 pb-1.5 flex justify-between tracking-wider">
+                        <span>Diagnostic Coordinates Payload</span>
                       </div>
-                      <div className="grid grid-cols-2 gap-y-1.5 gap-x-3 text-[9px]">
-                        <div>IP Address: <span className="text-slate-200 block font-bold mt-0.5">{selectedEvent.ip}</span></div>
-                        <div>Geolocation: <span className="text-slate-200 block font-bold mt-0.5">{selectedEvent.country} / {selectedEvent.country === 'RU' ? 'Moscow (VPN)' : selectedEvent.country === 'IT' ? 'Rome' : 'Tirana'}</span></div>
-                        <div className="col-span-2 truncate">User Agent: <span className="text-slate-200 block font-bold mt-0.5 truncate text-[8px]" title={selectedEvent.userAgent}>{selectedEvent.userAgent}</span></div>
+                      <div className="grid grid-cols-2 gap-y-1.5 gap-x-3 text-[9px] text-slate-400">
+                        <div>IP Coordinates: <span className="text-slate-200 block font-bold mt-0.5">{selectedEvent.ip}</span></div>
+                        <div>Geolocation: <span className="text-slate-200 block font-bold mt-0.5">{selectedEvent.country} / {selectedEvent.country === 'RU' ? 'MoscowSubnet' : selectedEvent.country === 'IT' ? 'RomeSubnet' : 'TiranaSubnet'}</span></div>
+                        <div className="col-span-2 truncate">Browser User Agent: <span className="text-slate-200 block font-bold mt-0.5 truncate text-[8px]" title={selectedEvent.userAgent}>{selectedEvent.userAgent}</span></div>
                         <div>Device Token: <span className="text-slate-200 block font-bold mt-0.5 truncate text-[8px]">{selectedEvent.deviceFingerprint?.replace('fp_', '').toUpperCase()}</span></div>
-                        <div>Input Method: <span className="text-slate-200 block font-bold mt-0.5 uppercase">{selectedEvent.inputMethod || 'TYPED'}</span></div>
+                        <div>Input Cadence: <span className="text-slate-200 block font-bold mt-0.5 uppercase">{selectedEvent.inputMethod || 'TYPED'}</span></div>
                         {selectedEvent.typingSpeedMs !== undefined && (
-                          <div>Typing Speed: <span className="text-slate-200 block font-bold mt-0.5">{selectedEvent.typingSpeedMs}ms/key</span></div>
+                          <div>Cadence Speed: <span className="text-slate-200 block font-bold mt-0.5">{selectedEvent.typingSpeedMs} ms/key</span></div>
                         )}
                         {selectedEvent.amount !== undefined && (
-                          <div>TX Amount: <span className="text-slate-200 block font-bold mt-0.5">€{selectedEvent.amount.toFixed(2)}</span></div>
+                          <div>Transaction Value: <span className="text-slate-200 block font-bold mt-0.5">€{selectedEvent.amount.toFixed(2)}</span></div>
                         )}
                         {selectedEvent.payeeName !== undefined && (
-                          <div className="col-span-2">Payee Target: <span className="text-slate-200 block font-bold mt-0.5 truncate">{selectedEvent.payeeName}</span></div>
+                          <div className="col-span-2">Recipient Payee: <span className="text-slate-200 block font-bold mt-0.5 truncate">{selectedEvent.payeeName}</span></div>
                         )}
                       </div>
                     </div>
@@ -664,7 +663,7 @@ export default function SecurityOperationsDashboard() {
                     {/* Signals List */}
                     <div className="space-y-2">
                       <span className="text-[9px] font-bold font-mono text-slate-500 uppercase tracking-wider block">
-                        Triggered Biometric Signals ({selectedEvent.signals?.length || 0})
+                        Evaluated Risk Factors ({selectedEvent.signals?.length || 0})
                       </span>
                       
                       <div className="space-y-2 max-h-[170px] overflow-y-auto pr-1">
@@ -672,37 +671,37 @@ export default function SecurityOperationsDashboard() {
                           selectedEvent.signals.map((sig, sIdx) => {
                             const signalScoreColor = getScoreDetails(sig.weight);
                             return (
-                              <div key={sIdx} className="bg-gray-950 border border-gray-850 p-2.5 rounded-xl space-y-1.5 font-mono text-[10px]">
+                              <div key={sIdx} className="bg-slate-950 border border-slate-850 p-2.5 rounded-xl space-y-1.5 font-mono text-[10px] shadow-sm">
                                 <div className="flex justify-between items-start font-bold">
                                   <span className={cn(
                                     sig.layer === 'network' && "text-sky-400",
-                                    sig.layer === 'behavioral' && "text-purple-400",
+                                    sig.layer === 'behavioral' && "text-indigo-400",
                                     sig.layer === 'transactional' && "text-amber-400",
-                                    "flex items-center gap-1"
+                                    "flex items-center gap-1.5"
                                   )}>
-                                    <Layers className="w-3 h-3" /> [{sig.layer.toUpperCase()}] {sig.name}
+                                    <Layers className="w-3 h-3 text-slate-400" /> [{sig.layer.toUpperCase()}] {sig.name}
                                   </span>
                                   <span className={signalScoreColor.text}>+{sig.weight}</span>
                                 </div>
 
                                 {/* Progress Weight Bar */}
-                                <div className="w-full bg-gray-900 border border-gray-850 rounded-full h-1 overflow-hidden">
+                                <div className="w-full bg-slate-900 border border-slate-850 rounded-full h-1 overflow-hidden">
                                   <div 
                                     className={cn("h-full rounded-full", signalScoreColor.fill)}
                                     style={{ width: `${Math.min((sig.weight / 40) * 100, 100)}%` }}
                                   />
                                 </div>
 
-                                <p className="text-slate-400 leading-relaxed text-[9px] italic">
+                                <p className="text-slate-450 leading-relaxed text-[9px] font-sans mt-0.5">
                                   "{sig.reason}"
                                 </p>
                               </div>
                             );
                           })
                         ) : (
-                          <div className="bg-emerald-950/20 border border-emerald-900/20 text-emerald-400 p-3 rounded-xl flex items-center gap-2 font-mono text-[10px] select-none">
-                            <ShieldCheck className="w-4 h-4 shrink-0" />
-                            <span>No layer anomalies flagged in this telemetry payload.</span>
+                          <div className="bg-emerald-950/20 border border-emerald-900/20 text-emerald-400 p-3 rounded-xl flex items-center gap-2.5 font-sans text-xs select-none">
+                            <ShieldCheck className="w-4 h-4 shrink-0 text-emerald-500" />
+                            <span>Telemetry matches clean behavioral baseline profile.</span>
                           </div>
                         )}
                       </div>
@@ -710,20 +709,20 @@ export default function SecurityOperationsDashboard() {
                   </div>
 
                   {/* BOTTOM ACTION BAR */}
-                  <div className="pt-3 border-t border-gray-800 mt-2 select-none">
+                  <div className="pt-3 border-t border-slate-800 mt-2 select-none">
                     {!selectedEvent.overridden && !isOverriding && (
                       <Button
                         onClick={() => setIsOverriding(true)}
-                        className="w-full bg-gray-950 border border-gray-850 hover:border-emerald-600 hover:bg-gray-900 hover:text-emerald-400 text-slate-300 font-bold py-2 rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-all text-xs font-mono uppercase tracking-wider"
+                        className="w-full bg-slate-950 border border-slate-850 hover:border-emerald-600 hover:bg-slate-900 hover:text-emerald-400 text-slate-300 font-bold py-2 rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-all text-xs font-mono uppercase tracking-wider"
                       >
-                        <UserCheck className="w-4 h-4 text-emerald-400" />
-                        <span>Mark as False Positive</span>
+                        <UserCheck className="w-4 h-4 text-emerald-500" />
+                        <span>Submit Whitelist Override</span>
                       </Button>
                     )}
                     {selectedEvent.overridden && (
                       <div className="bg-emerald-950/20 border border-emerald-900/30 text-emerald-400 py-2 rounded-xl flex items-center justify-center gap-2 font-mono text-xs font-bold uppercase tracking-wider">
                         <CheckCircle className="w-4 h-4" />
-                        <span>Security Override Active</span>
+                        <span>Whitelist Override Active</span>
                       </div>
                     )}
                   </div>

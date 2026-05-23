@@ -115,78 +115,122 @@ export default function BankHomePage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col p-5 space-y-5 animate-slide-up">
+    <div className="flex-1 flex flex-col p-5 space-y-5 animate-slide-up bg-slate-50 text-slate-800">
       {/* Top Header Card */}
-      <div className="flex justify-between items-center bg-slate-950/40 border border-slate-850 p-3.5 rounded-2xl">
+      <div className="flex justify-between items-center bg-white border border-slate-200/80 p-3.5 rounded-2xl shadow-sm">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-indigo-950 border border-indigo-900/30 flex items-center justify-center text-xs font-bold text-indigo-400 font-mono">
+          <div className="w-8 h-8 rounded-full bg-[#0a3474] flex items-center justify-center text-xs font-bold text-white">
             {currentUser.name.split(' ').map(n => n[0]).join('')}
           </div>
           <div>
-            <div className="text-[10px] text-slate-500 font-mono">WELCOME BACK</div>
-            <div className="text-xs font-bold text-slate-200 leading-tight">{currentUser.name}</div>
+            <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider font-mono">Welcome Back</div>
+            <div className="text-xs font-extrabold text-slate-800 leading-tight">{currentUser.name}</div>
           </div>
         </div>
         
         <button
           onClick={handleLogoutClick}
-          className="p-2 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-850 text-slate-400 hover:text-rose-400 transition-all cursor-pointer"
+          className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-400 hover:text-[#d61827] transition-all cursor-pointer"
           title="Sign Out"
         >
           <LogOut className="w-4 h-4" />
         </button>
       </div>
 
-      {/* Balance Glassmorphism Card */}
-      <div className="relative bg-gradient-to-br from-indigo-950/60 to-slate-900/80 border border-indigo-900/40 rounded-3xl p-6 shadow-xl shadow-indigo-950/20 overflow-hidden">
-        {/* Decorative Grid Glow */}
-        <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none" />
-        
-        <div className="flex justify-between items-start text-indigo-300">
-          <div className="flex items-center gap-1.5 text-xs font-mono tracking-wider">
-            <Wallet className="w-3.5 h-3.5" />
-            <span>PRIMARY CURRENT ACCOUNT</span>
+      {/* FiBank Mastercard Gold Premium Card */}
+      <div className="relative bg-gradient-to-br from-amber-500 via-amber-400 to-yellow-600 rounded-[24px] p-5 shadow-lg overflow-hidden text-white flex flex-col justify-between h-[200px] border border-yellow-500/30">
+        {/* Subtle Card Background Pattern Curves */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_right_bottom,#ffffff15,transparent_60%)] pointer-events-none" />
+        <div className="absolute top-[-50%] left-[-20%] w-[200px] h-[200px] border border-white/5 rounded-full pointer-events-none" />
+
+        {/* Card Top: Fibank Logo & Card Type */}
+        <div className="flex justify-between items-start z-10">
+          <div className="flex items-center gap-1.5 select-none">
+            {/* White variant logo for card */}
+            <div className="grid grid-cols-2 gap-[1.5px] rotate-45 w-4 h-4 border-2 border-white p-[1px] rounded-sm shrink-0">
+              <div className="bg-white rounded-[0.5px]" />
+              <div className="bg-[#d61827] rounded-[0.5px]" />
+              <div className="bg-white rounded-[0.5px]" />
+              <div className="bg-white rounded-[0.5px]" />
+            </div>
+            <span className="text-sm font-black tracking-tight font-sans text-white">Fibank</span>
           </div>
-          <span className="text-[10px] font-bold bg-indigo-950/80 border border-indigo-900/30 px-2.5 py-0.5 rounded-full font-mono">
-            EUR/ALL
+          <span className="text-[8px] font-bold bg-white/20 border border-white/30 px-2 py-0.5 rounded font-mono uppercase tracking-wider">
+            Mastercard Gold
           </span>
         </div>
 
-        <div className="mt-4">
-          <div className="text-[10px] text-slate-500 font-mono">AVAILABLE BALANCE</div>
-          <div className="text-3xl font-extrabold text-white mt-1 font-sans flex items-baseline gap-1">
-            €{currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        {/* Card Middle: Gold Chip Asset Mock & Card Number */}
+        <div className="z-10 mt-2">
+          {/* Mock Gold Chip */}
+          <div className="w-8 h-6 bg-gradient-to-br from-yellow-300 to-yellow-100 rounded-md border border-yellow-400/40 p-1 flex flex-col justify-between mb-3 shadow-inner">
+            <div className="grid grid-cols-3 gap-[1px] h-full opacity-40">
+              <div className="border-r border-slate-700" />
+              <div className="border-r border-slate-700" />
+              <div />
+            </div>
+          </div>
+          <div className="text-base font-bold font-mono tracking-widest text-slate-100 drop-shadow-sm select-all">
+            5240 1382 7654 8769
           </div>
         </div>
 
-        <div className="flex justify-between border-t border-slate-800/40 mt-5 pt-4 text-[10px] text-slate-500 font-mono">
-          <div>LIMIT FOR TODAY: €5,000</div>
-          <div>SWIFT SECURE ACTIVE</div>
+        {/* Card Bottom: Expiry Date, Cardholder, and Mastercard Circles */}
+        <div className="flex justify-between items-end z-10">
+          <div>
+            <div className="text-[7px] text-slate-200 font-bold uppercase tracking-wider font-mono">Cardholder</div>
+            <div className="text-xs font-extrabold tracking-wide uppercase mt-0.5">{currentUser.name}</div>
+          </div>
+          
+          <div className="flex items-center gap-6">
+            <div>
+              <div className="text-[7px] text-slate-200 font-bold uppercase tracking-wider font-mono">Expiry</div>
+              <div className="text-[10px] font-bold font-mono mt-0.5">10/28</div>
+            </div>
+            
+            {/* Mastercard Brand Circles */}
+            <div className="flex -space-x-2.5">
+              <div className="w-6 h-6 rounded-full bg-[#e51e26] opacity-90" />
+              <div className="w-6 h-6 rounded-full bg-[#f79e1b] opacity-90" />
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Security Status Widget */}
+      {/* Available Balance Quick Widget */}
+      <div className="bg-white border border-slate-200 p-4.5 rounded-2xl shadow-sm space-y-1 text-slate-800">
+        <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider font-mono">Available Account Balance</div>
+        <div className="text-2xl font-black text-[#0a3474] flex items-baseline gap-1 tracking-tight">
+          €{currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </div>
+        <div className="flex justify-between text-[8px] text-slate-400 font-mono pt-1.5 border-t border-slate-100 mt-1">
+          <span>DAILY TRANSACTION LIMIT: €5,000</span>
+          <span className="text-[#0a3474] font-semibold">ALL / EUR ACC</span>
+        </div>
+      </div>
+
+      {/* SafeShield™ Security Verdict Status Widget */}
       <div className={cn(
-        "border p-4 rounded-2xl flex items-start gap-3 transition-all duration-300",
-        lastVerdict === 'allow' && "bg-emerald-950/15 border-emerald-900/20 text-emerald-400 shadow-sm shadow-emerald-950/5",
-        lastVerdict === 'soft_challenge' && "bg-amber-950/15 border-amber-900/20 text-amber-400 shadow-sm shadow-amber-950/5",
-        lastVerdict === 'hard_challenge' && "bg-orange-950/15 border-orange-900/20 text-orange-400 shadow-sm shadow-orange-950/5",
-        lastVerdict === 'block' && "bg-red-950/15 border-red-900/20 text-red-400 shadow-sm shadow-red-950/5",
+        "border p-4 rounded-2xl flex items-start gap-3 transition-all duration-300 shadow-sm",
+        lastVerdict === 'allow' && "bg-emerald-50/50 border-emerald-200 text-emerald-800",
+        lastVerdict === 'soft_challenge' && "bg-amber-50/50 border-amber-200 text-amber-800",
+        lastVerdict === 'hard_challenge' && "bg-orange-50/50 border-orange-200 text-orange-850",
+        lastVerdict === 'block' && "bg-red-50/50 border-red-200 text-[#d61827]",
       )}>
         {lastVerdict === 'allow' ? (
-          <ShieldCheck className="w-5 h-5 shrink-0 mt-0.5" />
+          <ShieldCheck className="w-5 h-5 shrink-0 mt-0.5 text-emerald-600" />
         ) : (
-          <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5" />
+          <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5 text-amber-600" />
         )}
-        <div className="flex-1 space-y-0.5">
-          <div className="text-[11px] font-bold uppercase tracking-wider font-mono">
-            Sentinel Shield State
+        <div className="flex-1 space-y-0.5 font-sans">
+          <div className="text-[10px] font-extrabold uppercase tracking-wider font-mono">
+            SafeShield™ Status
           </div>
-          <div className="text-xs text-slate-300 font-sans leading-tight">
-            {lastVerdict === 'allow' && `Protected Session. Risk assessment clear (Score: ${lastScore}/100)`}
-            {lastVerdict === 'soft_challenge' && `MFA soft challenge verification passed (Score: ${lastScore}/100)`}
-            {lastVerdict === 'hard_challenge' && `Identity re-verified via biometric typing delays (Score: ${lastScore}/100)`}
-            {lastVerdict === 'block' && `CRITICAL ALERT: Threat detected and execution blocked (Score: ${lastScore}/100)`}
+          <div className="text-xs text-slate-600 leading-tight">
+            {lastVerdict === 'allow' && `Protected Session. Risk assessment: Safe (Factor: ${lastScore}/100)`}
+            {lastVerdict === 'soft_challenge' && `MFA soft verification requested & completed (Factor: ${lastScore}/100)`}
+            {lastVerdict === 'hard_challenge' && `Advanced identity re-auth validated successfully (Factor: ${lastScore}/100)`}
+            {lastVerdict === 'block' && `Critical Suspicious Activity Blocked (Factor: ${lastScore}/100)`}
           </div>
         </div>
       </div>
@@ -195,78 +239,78 @@ export default function BankHomePage() {
       <div className="grid grid-cols-2 gap-3.5">
         <button
           onClick={() => router.push('/bank/transfer')}
-          className="group bg-slate-950/60 hover:bg-indigo-950/15 border border-slate-850 hover:border-indigo-500/50 p-4 rounded-2xl flex flex-col justify-between items-start text-left transition-all duration-300 active:scale-[0.97] hover:shadow-lg hover:shadow-indigo-950/5 cursor-pointer"
+          className="group bg-white hover:bg-[#0a3474]/5 border border-slate-200 hover:border-[#0a3474]/40 p-4 rounded-2xl flex flex-col justify-between items-start text-left transition-all duration-300 active:scale-[0.97] hover:shadow-md cursor-pointer"
         >
-          <div className="p-2.5 rounded-xl bg-indigo-950/80 border border-indigo-900/40 text-indigo-400 group-hover:scale-110 transition-transform">
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[#0a3474] group-hover:bg-[#0a3474] group-hover:text-white transition-all">
             <Send className="w-4 h-4" />
           </div>
           <div className="mt-4">
-            <div className="text-xs font-bold text-slate-200 group-hover:text-white transition-colors">Send Money</div>
-            <div className="text-[9px] text-slate-500 font-mono mt-0.5">SECURE WIRE TRANSFER</div>
+            <div className="text-xs font-extrabold text-slate-800 transition-colors">Send Money</div>
+            <div className="text-[8px] text-slate-400 font-mono mt-0.5 uppercase tracking-wider font-semibold">SWIFT Wire Transfer</div>
           </div>
         </button>
 
         <button
           onClick={() => router.push('/bank/add-payee')}
-          className="group bg-slate-950/60 hover:bg-indigo-950/15 border border-slate-850 hover:border-indigo-500/50 p-4 rounded-2xl flex flex-col justify-between items-start text-left transition-all duration-300 active:scale-[0.97] hover:shadow-lg hover:shadow-indigo-950/5 cursor-pointer"
+          className="group bg-white hover:bg-[#0a3474]/5 border border-slate-200 hover:border-[#0a3474]/40 p-4 rounded-2xl flex flex-col justify-between items-start text-left transition-all duration-300 active:scale-[0.97] hover:shadow-md cursor-pointer"
         >
-          <div className="p-2.5 rounded-xl bg-indigo-950/80 border border-indigo-900/40 text-indigo-400 group-hover:scale-110 transition-transform">
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[#0a3474] group-hover:bg-[#0a3474] group-hover:text-white transition-all">
             <Plus className="w-4 h-4" />
           </div>
           <div className="mt-4">
-            <div className="text-xs font-bold text-slate-200 group-hover:text-white transition-colors">Add Payee</div>
-            <div className="text-[9px] text-slate-500 font-mono mt-0.5">WHITELIST ACCOUNT ID</div>
+            <div className="text-xs font-extrabold text-slate-800 transition-colors">Add Payee</div>
+            <div className="text-[8px] text-slate-400 font-mono mt-0.5 uppercase tracking-wider font-semibold">Whitelist Beneficiary</div>
           </div>
         </button>
       </div>
 
       {/* Transaction List */}
       <div className="space-y-2">
-        <div className="flex justify-between items-center text-slate-400 text-xs font-semibold uppercase tracking-wider font-mono px-1">
+        <div className="flex justify-between items-center text-slate-500 text-[10px] font-bold uppercase tracking-wider font-mono px-1">
           <span>Recent Activity</span>
-          <Clock className="w-3.5 h-3.5 text-slate-600" />
+          <Clock className="w-3.5 h-3.5 text-slate-400" />
         </div>
 
-        <div className="bg-slate-950/40 border border-slate-850 rounded-2xl p-2 divide-y divide-slate-900 max-h-[220px] overflow-y-auto">
+        <div className="bg-white border border-slate-200 rounded-2xl p-1.5 divide-y divide-slate-100 max-h-[220px] overflow-y-auto shadow-sm">
           {allTransfers.length > 0 ? (
             allTransfers.map((tx, idx) => (
               <div key={tx.id || idx} className="py-2.5 px-3 flex items-center justify-between text-left">
                 <div className="flex items-center gap-3">
                   <div className={cn(
-                    "w-8 h-8 rounded-lg flex items-center justify-center",
-                    tx.verdict === 'block' ? "bg-red-950/30 text-red-400 border border-red-900/20" : "bg-slate-900 text-slate-400 border border-slate-800"
+                    "w-8 h-8 rounded-lg flex items-center justify-center border",
+                    tx.verdict === 'block' ? "bg-red-50 text-[#d61827] border-red-100" : "bg-slate-50 text-slate-500 border-slate-200"
                   )}>
-                    <ArrowUpRight className={cn("w-4 h-4", tx.verdict === 'block' && "rotate-45")} />
+                    <ArrowUpRight className={cn("w-4 h-4 shrink-0", tx.verdict === 'block' && "rotate-45")} />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-slate-200 flex items-center gap-1.5 font-sans">
+                    <div className="text-xs font-extrabold text-slate-800 flex items-center gap-1.5 font-sans leading-none">
                       {tx.payeeName}
                       {tx.verdict === 'block' && (
-                        <span className="text-[8px] bg-red-950/80 border border-red-900/30 text-red-400 px-1 py-0.2 rounded font-mono font-medium">
-                          BLOCKED
+                        <span className="text-[7px] bg-red-150 border border-red-200 text-[#d61827] px-1 py-0.2 rounded font-mono font-bold uppercase">
+                          Suspended
                         </span>
                       )}
                       {(tx.verdict === 'soft_challenge' || tx.verdict === 'hard_challenge') && (
-                        <span className="text-[8px] bg-amber-950/80 border border-amber-900/30 text-amber-400 px-1 py-0.2 rounded font-mono font-medium">
-                          CHALLENGED
+                        <span className="text-[7px] bg-amber-100 border border-amber-200 text-amber-700 px-1 py-0.2 rounded font-mono font-bold uppercase">
+                          Verified
                         </span>
                       )}
                     </div>
-                    <div className="text-[9px] text-slate-500 font-mono mt-0.5">
+                    <div className="text-[9px] text-slate-400 font-mono mt-1">
                       {new Date(tx.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </div>
                 </div>
                 <div className={cn(
                   "text-xs font-bold font-mono",
-                  tx.verdict === 'block' ? "text-slate-500 line-through" : "text-slate-100"
+                  tx.verdict === 'block' ? "text-slate-400 line-through" : "text-slate-800"
                 )}>
                   -€{tx.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
               </div>
             ))
           ) : (
-            <div className="text-center p-8 text-xs text-slate-500 italic font-mono select-none">
+            <div className="text-center p-8 text-xs text-slate-400 italic font-mono select-none">
               No transactions recorded in this session.
             </div>
           )}

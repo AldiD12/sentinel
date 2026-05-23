@@ -7,7 +7,7 @@ import {
   Settings, Zap, RefreshCw, Play, CheckCircle, XCircle, Terminal, 
   ArrowLeft, Copy, Trash2, HelpCircle, Eye, EyeOff
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, safeUUID } from '@/lib/utils';
 import { USERS } from '@/lib/users';
 
 interface TelemetryOverrides {
@@ -147,7 +147,7 @@ export default function AttackerDashboard() {
     const payload = {
       type: 'login',
       userId: target.userId,
-      sessionId: 'phish-' + crypto.randomUUID().slice(0, 8),
+      sessionId: 'phish-' + safeUUID().slice(0, 8),
       ip: '185.220.101.5',
       asn: 'AS9009 Tor Exit',
       geoCountry: 'RU',
@@ -231,7 +231,7 @@ export default function AttackerDashboard() {
     setIsSimulating('ato');
     
     const target = USERS[targetUserId];
-    const sharedSessionId = 'ato-' + crypto.randomUUID().slice(0, 8);
+    const sharedSessionId = 'ato-' + safeUUID().slice(0, 8);
     
     // Setup logs
     const logId = Math.random().toString(36).substring(7);
@@ -368,7 +368,7 @@ export default function AttackerDashboard() {
     const payload = {
       type: 'transfer',
       userId: target.userId,
-      sessionId: 'replay-' + crypto.randomUUID().slice(0, 8),
+      sessionId: 'replay-' + safeUUID().slice(0, 8),
       ip: target.usualIPs[0], // Spoofed as user's real IP!
       asn: target.usualASNs[0], // Spoofed as real ASN!
       geoCountry: target.usualCountry,
@@ -431,7 +431,7 @@ export default function AttackerDashboard() {
     
     const target = USERS[targetUserId];
     const logId = Math.random().toString(36).substring(7);
-    const sharedSession = 'dos-' + crypto.randomUUID().slice(0, 8);
+    const sharedSession = 'dos-' + safeUUID().slice(0, 8);
 
     appendLog({
       id: logId,
@@ -555,7 +555,7 @@ export default function AttackerDashboard() {
 
     const target = USERS[targetUserId];
     const logId = Math.random().toString(36).substring(7);
-    const sharedSession = 'legit-' + crypto.randomUUID().slice(0, 8);
+    const sharedSession = 'legit-' + safeUUID().slice(0, 8);
 
     const payload = {
       type: 'transfer',

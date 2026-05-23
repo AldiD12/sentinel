@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, useRef, ReactNode } from 'react';
 import type { EventType, SentinelEvent, RiskAssessment, ProcessedEvent } from './types';
 import { USERS } from './users';
+import { safeUUID } from './utils';
 
 const PAYEE_NAMES: Record<string, string> = {
   payee_mom: 'Valbona Hoxha (Mom)',
@@ -37,7 +38,7 @@ const Ctx = createContext<SessionCtx | null>(null);
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [userId, setUserId] = useState('');
-  const sessionId = useRef(crypto.randomUUID());
+  const sessionId = useRef(safeUUID());
   const sessionStartMs = useRef(Date.now());
   const [precedingEvents, setPreceding] = useState<EventType[]>([]);
   
@@ -50,7 +51,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   function setUser(id: string) {
     setUserId(id);
-    sessionId.current = crypto.randomUUID();
+    sessionId.current = safeUUID();
     sessionStartMs.current = Date.now();
     setPreceding([]);
     setLatestAssessment(null);
