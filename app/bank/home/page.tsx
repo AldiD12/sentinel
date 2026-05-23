@@ -198,16 +198,53 @@ export default function BankHomePage() {
       </div>
 
       {/* Available Balance Quick Widget */}
-      <div className="bg-white border border-slate-200 p-4.5 rounded-2xl shadow-sm space-y-1 text-slate-800">
-        <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider font-mono">Available Account Balance</div>
-        <div className="text-2xl font-black text-[#0a3474] flex items-baseline gap-1 tracking-tight">
-          €{currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-        </div>
-        <div className="flex justify-between text-[8px] text-slate-400 font-mono pt-1.5 border-t border-slate-100 mt-1">
-          <span>DAILY TRANSACTION LIMIT: €5,000</span>
-          <span className="text-[#0a3474] font-semibold">ALL / EUR ACC</span>
-        </div>
-      </div>
+      {(() => {
+        const DAILY_LIMIT = 50000;
+        const spentToday = successfulTransfers.reduce((s, e) => s + (e.amount ?? 0), 0);
+        const remaining = Math.max(0, DAILY_LIMIT - spentToday);
+        const usedPct = Math.min(100, (spentToday / DAILY_LIMIT) * 100);
+        return (
+          <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm space-y-3 text-slate-800">
+            <div className="flex justify-between items-start">
+              <div>
+                <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider font-mono">Available Balance</div>
+                <div className="text-2xl font-black text-[#0a3474] tracking-tight mt-0.5">
+                  €{currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider font-mono">Today Spent</div>
+                <div className="text-sm font-bold text-slate-700 mt-0.5">
+                  €{spentToday.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-[8px] font-mono text-slate-400">
+                <span>DAILY LIMIT USAGE</span>
+                <span className={cn(usedPct > 80 ? 'text-[#d61827]' : 'text-[#0a3474]', 'font-bold')}>
+                  €{remaining.toLocaleString('en-US', { minimumFractionDigits: 0 })} remaining of €{(DAILY_LIMIT/1000).toFixed(0)}K
+                </span>
+              </div>
+              <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                <div
+                  className={cn(
+                    'h-full rounded-full transition-all duration-500',
+                    usedPct > 80 ? 'bg-[#d61827]' : usedPct > 50 ? 'bg-amber-500' : 'bg-[#0a3474]'
+                  )}
+                  style={{ width: `${usedPct}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-between text-[8px] text-slate-400 font-mono border-t border-slate-100 pt-2">
+              <span>IBAN: AL47 2121 1009 0000 0002 3569 87</span>
+              <span className="text-[#0a3474] font-semibold">ALL / EUR ACC</span>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* SafeShield™ Security Verdict Status Widget */}
       <div className={cn(
