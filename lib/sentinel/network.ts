@@ -1,5 +1,5 @@
 // /lib/sentinel/network.ts
-import type { SentinelEvent, UserBaseline, Signal } from '../types';
+import type { SentinelEvent, UserBaseline, Signal, SealStatus } from '../types';
 import { getRecentCardSwipe } from '../pos-ledger';
 
 const HIGH_RISK_COUNTRIES = new Set(['RU', 'KP', 'IR', 'BY', 'VN', 'NG', 'CN']);
@@ -99,10 +99,39 @@ function detectBotTlsFingerprint(event: SentinelEvent, _baseline: UserBaseline):
   };
 }
 
+// +100 — payload arrived without a valid cryptographic telemetry seal.
+// The browser SDK signs every event with a single-use, 30-second server-issued nonce.
+// Direct API callers (attacker console, curl, Postman, replayed captures) have no
+// valid nonce and are flagged here before any other signal is evaluated.
+// A score of 100 on this signal alone forces verdict:'block' regardless of other signals.
+function detectTelemetryTampering(event: SentinelEvent, _baseline: UserBaseline): Signal | null {
+  const status = event.sealStatus;
+  // sealStatus is injected server-side in /api/events — 'valid' means the
+  // cryptographic handshake passed. Absence means the route didn't set it
+  // (shouldn't happen in production, treated as missing).
+  if (!status || status === 'valid') return null;
+
+  const REASON: Record<Exclude<SealStatus, 'valid'>, string> = {
+    missing:  'No challengeNonce or telemetrySeal in payload — caller bypassed the browser SDK and posted directly to the API (attacker console, curl, Postman, or scripted injection)',
+    expired:  'Challenge nonce is older than 30 s — payload is a replay of a previously captured legitimate request',
+    reused:   'Challenge nonce was already consumed in a prior request — definite replay attack or request duplication',
+    forged:   'Challenge nonce was not issued by this server — nonce is fabricated or sourced from a different server instance',
+    tampered: 'Telemetry seal SHA-256 hash does not match server recomputation — one or more payload fields (userId, type, deviceFingerprint, typingSpeedMs) were mutated after the browser signed the payload',
+  };
+
+  return {
+    name: 'telemetry_tampering',
+    layer: 'network',
+    weight: 100,
+    reason: REASON[status],
+  };
+}
+
 export function networkDetectors(event: SentinelEvent, baseline: UserBaseline): Signal[] {
   const country = event.country ?? event.geoCountry ?? event.geoCity ?? 'unknown';
 
   return [
+    detectTelemetryTampering(event, baseline),
     detectUnknownNetwork(event, baseline),
     detectImpossibleTravel(event, baseline, country),
     detectCrossChannelVerified(event, baseline, country),

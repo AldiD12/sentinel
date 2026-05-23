@@ -33,6 +33,20 @@ export interface UserBaseline {
   typicalTypingSpeedMs: number;
 }
 
+/**
+ * sealStatus is server-computed after validating the cryptographic telemetry seal.
+ * The browser SDK signs every payload with a single-use nonce; direct API callers
+ * (e.g. attacker console) have no valid nonce and are flagged immediately.
+ *
+ *  valid    — nonce consumed, SHA-256 seal matches server recomputation
+ *  missing  — no challengeNonce or telemetrySeal in payload (direct API call)
+ *  expired  — nonce older than 30 s (possible replay of captured payload)
+ *  reused   — nonce already consumed (definite replay attack)
+ *  forged   — nonce not issued by this server (crafted or cross-server)
+ *  tampered — nonce valid but seal hash mismatch (fields altered after signing)
+ */
+export type SealStatus = 'valid' | 'missing' | 'expired' | 'reused' | 'forged' | 'tampered';
+
 export interface SentinelEvent {
   id?: string;
   userId: string;
@@ -55,6 +69,11 @@ export interface SentinelEvent {
   typingSpeedMs?: number;
   mouseMovementScore?: number;
   precedingEvents?: string[];
+  // Cryptographic telemetry seal — set by the browser SDK, validated server-side
+  challengeNonce?: string;
+  telemetrySeal?: string;
+  // Injected by /api/events route after seal validation — never trusted from client
+  sealStatus?: SealStatus;
 }
 
 export interface RiskAssessment {
