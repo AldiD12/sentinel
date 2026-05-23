@@ -52,16 +52,16 @@ export default function BankHomePage() {
 
   // Starting balance configuration
   const STARTING_BALANCES: Record<string, number> = {
-    user_001: 2840.00, // Aldi: €2,840 as requested in Phase 1
-    user_002: 1205.00, // Anest: €1,205 as requested in Phase 1
-    user_003: 8950.00, // Kristi: €8,950 as requested in Phase 1
+    user_001: 300000.00,
+    user_002: 1205.00,
+    user_003: 8950.00,
   };
 
   const initialBalance = STARTING_BALANCES[userId] || 1000.00;
 
   // Calculate current balance by subtracting all successful transfers
   const successfulTransfers = precedingAssessments.filter(
-    e => e.type === 'transfer' && e.verdict !== 'block' && e.amount !== undefined
+    e => e.type === 'transfer' && (e.verdict === 'allow' || e.verdict === 'soft_challenge') && e.amount !== undefined
   );
   
   const totalDeducted = successfulTransfers.reduce((sum, e) => sum + (e.amount || 0), 0);

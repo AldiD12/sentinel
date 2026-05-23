@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { USERS } from '@/lib/users';
 
 const STARTING_BALANCES: Record<string, number> = {
-  user_001: 2840.00,
+  user_001: 300000.00,
   user_002: 1205.00,
   user_003: 8950.00,
 };
@@ -32,7 +32,7 @@ export default function BankTransferPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Verdict response screens
-  const [verdictType, setVerdictType] = useState<'none' | 'success' | 'soft' | 'hard' | 'block'>('none');
+  const [verdictType, setVerdictType] = useState<'none' | 'success' | 'pending' | 'soft' | 'hard' | 'block'>('none');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [txDetails, setTxDetails] = useState<{ amount: number; payeeName: string; txHash: string } | null>(null);
 
@@ -48,7 +48,7 @@ export default function BankTransferPage() {
   const availableBalance = (() => {
     const initial = STARTING_BALANCES[userId] ?? 1000;
     const deducted = precedingAssessments
-      .filter(e => e.type === 'transfer' && e.verdict !== 'block' && e.amount !== undefined)
+      .filter(e => e.type === 'transfer' && (e.verdict === 'allow' || e.verdict === 'soft_challenge') && e.amount !== undefined)
       .reduce((sum, e) => sum + (e.amount ?? 0), 0);
     return initial - deducted;
   })();
@@ -110,7 +110,7 @@ export default function BankTransferPage() {
     // Balance guard — prevent overdraft
     const initialBalance = STARTING_BALANCES[userId] ?? 1000;
     const totalDeducted = precedingAssessments
-      .filter(e => e.type === 'transfer' && e.verdict !== 'block' && e.amount !== undefined)
+      .filter(e => e.type === 'transfer' && (e.verdict === 'allow' || e.verdict === 'soft_challenge') && e.amount !== undefined)
       .reduce((sum, e) => sum + (e.amount ?? 0), 0);
     const availableBalance = initialBalance - totalDeducted;
     if (amountNum > availableBalance) {
@@ -206,7 +206,7 @@ export default function BankTransferPage() {
     e.preventDefault();
     // Verify hard MFA PIN (Hint: 888888)
     if (challengeOtp === '888888') {
-      setVerdictType('success');
+      setVerdictType('pending');
     } else {
       setChallengeAttempts(prev => prev + 1);
       if (challengeAttempts >= 1) {
@@ -254,6 +254,53 @@ export default function BankTransferPage() {
             <div className="flex justify-between text-[10px]">
               <span className="text-slate-400 font-medium">SafeShield™ Status:</span>
               <span className="text-emerald-600 font-bold uppercase tracking-wider">Secured & Approved</span>
+            </div>
+          </div>
+        </div>
+
+        <button
+          onClick={() => router.push('/bank/home')}
+          className="w-full bg-[#0a3474] text-white py-3.5 rounded-2xl text-xs font-bold hover:bg-[#072450] active:scale-[0.98] transition-all cursor-pointer shadow-md"
+        >
+          Return to Dashboard
+        </button>
+      </div>
+    );
+  }
+
+  // ---------------------------------------------------------
+  // RENDER: PENDING ANALYST REVIEW (after hard challenge OTP)
+  // ---------------------------------------------------------
+  if (verdictType === 'pending' && txDetails) {
+    return (
+      <div className="flex-1 flex flex-col justify-between p-6 bg-slate-50 animate-fade-in text-slate-800">
+        <div className="my-auto text-center space-y-6">
+          <div className="w-16 h-16 rounded-full bg-orange-100 border border-orange-300 flex items-center justify-center mx-auto shadow-md">
+            <ShieldAlert className="w-8 h-8 text-orange-500" />
+          </div>
+          <div>
+            <h2 className="text-xl font-extrabold text-slate-800">Under Analyst Review</h2>
+            <p className="text-slate-500 text-xs mt-2 leading-relaxed max-w-xs mx-auto">
+              Identity verified. Your transaction has been escalated to the FiBank security team for final approval. You will be notified within 15 minutes.
+            </p>
+          </div>
+
+          <div className="bg-white border border-orange-200 p-4 rounded-2xl text-left space-y-3 font-sans text-xs shadow-sm">
+            <div className="flex justify-between border-b border-slate-100 pb-2">
+              <span className="text-slate-400 font-medium">Beneficiary Recipient:</span>
+              <span className="text-slate-800 font-extrabold">{txDetails.payeeName}</span>
+            </div>
+            <div className="flex justify-between border-b border-slate-100 pb-2">
+              <span className="text-slate-400 font-medium">Amount Requested:</span>
+              <span className="text-orange-500 font-extrabold">€{txDetails.amount.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between border-b border-slate-100 pb-2">
+              <span className="text-slate-400 font-medium">Transaction Reference:</span>
+              <span className="text-[#0a3474] font-mono font-bold">{txDetails.txHash}</span>
+            </div>
+            <div className="flex justify-between text-[10px]">
+              <span className="text-slate-400 font-medium">SafeShield™ Status:</span>
+              <span className="text-orange-500 font-bold uppercase tracking-wider">Pending Analyst Sign-Off</span>
             </div>
           </div>
         </div>
