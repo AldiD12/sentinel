@@ -2,27 +2,27 @@
 import type { SentinelEvent, UserBaseline, Signal } from '../types';
 import { getRecentEventForUserByType, getLastEventForUser } from '../store';
 
-const BOT_UA = /curl|python-requests|wget|scrapy|mechanize|phantomjs|headless|selenium|puppeteer|playwright/i;
+// +25 — no mouse movement detected OR machine-speed keystroke timing.
+// Automated scripts emit zero coordinate telemetry or type at inhuman speeds.
+function detectMissingMouseCadence(event: SentinelEvent, _baseline: UserBaseline): Signal | null {
+  const noMouse = event.mouseMovementScore !== undefined && event.mouseMovementScore < 20;
+  const tooFast = event.typingSpeedMs !== undefined && event.typingSpeedMs < 50;
 
-// +25 — bot/automation UA or machine-speed keystroke timing
-function detectNoHumanInput(event: SentinelEvent, _baseline: UserBaseline): Signal | null {
-  const isBotUA = BOT_UA.test(event.userAgent);
-  const tooFast =
-    event.typingSpeedMs !== undefined && event.typingSpeedMs < 50;
-
-  if (!isBotUA && !tooFast) return null;
+  if (!noMouse && !tooFast) return null;
 
   const parts: string[] = [];
-  if (isBotUA) {
-    parts.push(`User-Agent "${event.userAgent}" matches bot/automation pattern`);
+  if (noMouse) {
+    parts.push(
+      `mouse movement score ${event.mouseMovementScore}/100 — below human threshold of 20 (automated execution produces zero or near-zero pointer telemetry)`
+    );
   }
   if (tooFast) {
     parts.push(
-      `typing speed ${event.typingSpeedMs} ms is below human minimum of 50 ms`
+      `typing speed ${event.typingSpeedMs} ms/key is below human minimum of 50 ms — consistent with programmatic credential injection`
     );
   }
 
-  return { name: 'no_human_input', layer: 'behavioral', weight: 25, reason: parts.join('; ') };
+  return { name: 'missing_mouse_cadence', layer: 'behavioral', weight: 25, reason: parts.join('; ') };
 }
 
 // +15 — credentials were pasted, not typed (phishing paste indicator)
@@ -41,6 +41,9 @@ function detectPastedCredentials(event: SentinelEvent, _baseline: UserBaseline):
 // +30 — transfer with no preceding view_balance in last 5 min (direct API call pattern)
 function detectApiReplayPattern(event: SentinelEvent, _baseline: UserBaseline): Signal | null {
   if (event.type !== 'transfer') return null;
+
+  const hasViewBalance = event.precedingEvents?.includes('view_balance') ?? false;
+  if (hasViewBalance) return null;
 
   const recentViewBalance = getRecentEventForUserByType(
     event.userId,
@@ -61,6 +64,8 @@ function detectApiReplayPattern(event: SentinelEvent, _baseline: UserBaseline): 
 function detectTransferVelocity(event: SentinelEvent, _baseline: UserBaseline): Signal | null {
   if (event.type !== 'transfer') return null;
 
+  if (event.precedingEvents && event.precedingEvents.length > 0) return null;
+
   const last = getLastEventForUser(event.userId);
   if (!last?.timestamp || !event.timestamp) return null;
 
@@ -78,7 +83,7 @@ function detectTransferVelocity(event: SentinelEvent, _baseline: UserBaseline): 
 
 export function behavioralDetectors(event: SentinelEvent, baseline: UserBaseline): Signal[] {
   return [
-    detectNoHumanInput(event, baseline),
+    detectMissingMouseCadence(event, baseline),
     detectPastedCredentials(event, baseline),
     detectApiReplayPattern(event, baseline),
     detectTransferVelocity(event, baseline),

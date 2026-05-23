@@ -43,7 +43,26 @@ export function buildEvent(
     try {
       const stored = window.localStorage.getItem('sentinel_telemetry_overrides');
       if (stored) {
-        overrides = JSON.parse(stored);
+        // Auto-expire overrides after 5 minutes so a previous attack demo
+        // doesn't permanently poison the bank portal's telemetry.
+        const TS_KEY = 'sentinel_telemetry_overrides_ts';
+        const OVERRIDE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+        const readAt = Date.now();
+        const ts = parseInt(window.localStorage.getItem(TS_KEY) ?? '0');
+
+        if (ts === 0) {
+          // First read since the attacker console wrote overrides — stamp it
+          window.localStorage.setItem(TS_KEY, String(readAt));
+          overrides = JSON.parse(stored);
+        } else if (readAt - ts < OVERRIDE_TTL_MS) {
+          // Within TTL — still active
+          overrides = JSON.parse(stored);
+        } else {
+          // Expired — auto-clear so the bank returns to native baseline
+          window.localStorage.removeItem('sentinel_telemetry_overrides');
+          window.localStorage.removeItem(TS_KEY);
+          console.info('[Sentinel] Telemetry overrides expired and cleared automatically.');
+        }
       }
     } catch (e) {
       console.warn('Failed to parse sentinel_telemetry_overrides', e);
