@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { cn, safeUUID } from '@/lib/utils';
 import { USERS } from '@/lib/users';
+import { submitEvent } from '@/lib/mock-api';
 
 interface TelemetryOverrides {
   ip: string;
@@ -268,12 +269,7 @@ export default function AttackerDashboard() {
         inputMethod: 'pasted'
       };
 
-      const res1 = await fetch('/api/events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(loginPayload),
-      });
-      const data1 = await res1.json();
+      const data1 = await submitEvent(loginPayload);
       setSimulationStep(`ATO Stage 1 Result: Score ${data1.score} | Verdict: ${data1.verdict}`);
 
       // Step 2: Register Payee
@@ -302,12 +298,7 @@ export default function AttackerDashboard() {
         payeeName: 'Hacker Drain Beneficiary'
       };
 
-      const res2 = await fetch('/api/events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payeePayload),
-      });
-      const data2 = await res2.json();
+      const data2 = await submitEvent(payeePayload);
       setSimulationStep(`ATO Stage 2 Result: Score ${data2.score} | Verdict: ${data2.verdict}`);
 
       // Step 3: Wire transfer large amount
@@ -338,12 +329,7 @@ export default function AttackerDashboard() {
         payeeIsNew: true
       };
 
-      const res3 = await fetch('/api/events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(transferPayload),
-      });
-      const data3 = await res3.json();
+      const data3 = await submitEvent(transferPayload);
       
       updateLogResponse(logId, data3, 'success');
       setSimulationStep(`ATO Complete: Transfer Verdict: ${data3.verdict.toUpperCase()} (Score: ${data3.score})`);
