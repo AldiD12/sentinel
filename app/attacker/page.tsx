@@ -136,94 +136,85 @@ export default function AttackerDashboard() {
   // SIMULATION VECTORS
   // -------------------------------------------------------------
 
-  // Attack 1: Phishing Login (Stolen creds, RU IP, curl User Agent, pasted password)
+  // Attack 1: Residential Proxy Bypass — attacker uses a local Albanian IP and correct iPhone
+  // UA to evade geo/network detection. Caught purely by behavioral layer: machine-speed
+  // keystrokes, zero mouse movement, pasted credentials, no session flow before transfer.
   const runPhishingLoginSimulation = async () => {
     if (isSimulating) return;
     setIsSimulating('phishing');
-    setSimulationStep('Initializing Phishing Attack...');
-    
+
     const target = USERS[targetUserId];
+    const sharedSession = 'proxy-' + safeUUID().slice(0, 8);
     const logId = Math.random().toString(36).substring(7);
-    
-    const payload = {
-      type: 'login',
-      userId: target.userId,
-      sessionId: 'phish-' + safeUUID().slice(0, 8),
-      ip: '185.220.101.5',
-      asn: 'AS9009 Tor Exit',
-      geoCountry: 'RU',
-      geoCity: 'Moscow',
-      userAgent: 'curl/7.68.0',
-      deviceFingerprint: 'fp_unknown',
-      sessionAgeMs: 1200,
-      timeSinceLastEventMs: 800,
-      mouseMovementScore: 0,
-      typingSpeedMs: 4, // extremely fast
-      precedingEvents: [],
-      requestRateLastMinute: 2,
-      hasValidCSRF: true,
-      inputMethod: 'pasted'
-    };
 
     appendLog({
       id: logId,
       timestamp: Date.now(),
-      scenario: 'Phishing Login (RU Tor Exit)',
-      method: 'POST /api/events (login)',
+      scenario: 'Residential Proxy Bypass (Behavioral Detection)',
+      method: 'Browser SDK — login → transfer chain',
       targetUser: target.name,
-      payload,
+      payload: { note: 'Albanian IP + correct iPhone UA — network layer blind. Behavioral layer catches it.' },
       status: 'pending'
     });
 
-    setSimulationStep('Deploying Russian Tor IP spoofing payload...');
+    try {
+      // Step 1: login — local Albanian IP, correct UA, but bot biometrics
+      setSimulationStep('Stage 1/2: Credential injection via residential proxy...');
+      const loginPayload = {
+        type: 'login',
+        userId: target.userId,
+        sessionId: sharedSession,
+        ip: '85.31.45.200',           // Albanian residential IP — same subnet as user
+        asn: target.usualASNs[0],      // correct ASN — passes geo check
+        geoCountry: 'AL',              // correct country — passes impossible_travel
+        geoCity: 'Tirana',
+        userAgent: target.usualUserAgent, // correct iPhone UA — passes bot check
+        deviceFingerprint: 'fp_proxy_injected', // different fingerprint — unknown device
+        mouseMovementScore: 3,         // near-zero — bot cursor movement
+        typingSpeedMs: 3,              // 3ms/key — impossible for a human
+        precedingEvents: [],
+        requestRateLastMinute: 1,
+        inputMethod: 'pasted',
+      };
 
-    // Also auto-inject spoof coords in browser session so the analyst can test it interactively
-    localStorage.setItem('sentinel_telemetry_overrides', JSON.stringify({
-      ip: payload.ip,
-      asn: payload.asn,
-      geoCountry: payload.geoCountry,
-      geoCity: payload.geoCity,
-      userAgent: payload.userAgent,
-      deviceFingerprint: payload.deviceFingerprint,
-      mouseMovementScore: 0,
-      typingSpeedMs: 4,
-      inputMethod: 'pasted'
-    }));
-    setActiveSpoofs({
-      ip: payload.ip,
-      asn: payload.asn,
-      geoCountry: payload.geoCountry,
-      geoCity: payload.geoCity,
-      userAgent: payload.userAgent,
-      deviceFingerprint: payload.deviceFingerprint
-    });
+      const data1 = await submitEvent(loginPayload);
+      setSimulationStep(`Stage 1 result: Score ${data1.score} | ${data1.verdict}`);
 
-    setTimeout(async () => {
-      try {
-        setSimulationStep('Executing POST injection to Sentinel Core...');
-        const res = await fetch('/api/events', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-        
-        if (res.ok) {
-          const data = await res.json();
-          updateLogResponse(logId, data, 'success');
-          showToast(`Phishing attempt ingested. Verdict: ${data.verdict.toUpperCase()}`, data.verdict === 'block' ? 'error' : 'info');
-        } else {
-          const errText = await res.text();
-          updateLogResponse(logId, undefined, 'failed', errText || 'API Server Error');
-          showToast('Simulation connection error.', 'error');
-        }
-      } catch (err: any) {
-        updateLogResponse(logId, undefined, 'failed', err.message);
-        showToast('Connection refused.', 'error');
-      } finally {
-        setIsSimulating(null);
-        setSimulationStep('');
-      }
-    }, 1200);
+      await new Promise(r => setTimeout(r, 600));
+
+      // Step 2: immediate transfer — no view_balance, large amount, unknown payee
+      setSimulationStep('Stage 2/2: Silent transfer to external IBAN...');
+      const transferPayload = {
+        type: 'transfer',
+        userId: target.userId,
+        sessionId: sharedSession,
+        ip: '85.31.45.200',
+        asn: target.usualASNs[0],
+        geoCountry: 'AL',
+        geoCity: 'Tirana',
+        userAgent: target.usualUserAgent,
+        deviceFingerprint: 'fp_proxy_injected',
+        mouseMovementScore: 2,
+        typingSpeedMs: 3,
+        precedingEvents: ['login'],    // skipped view_balance — api_replay_pattern fires
+        requestRateLastMinute: 2,
+        inputMethod: 'pasted',
+        amount: 8500,
+        payeeId: 'payee_external_iban',
+        payeeName: 'External IBAN — Proxy Drain',
+        isKnownPayee: false,
+      };
+
+      const data2 = await submitEvent(transferPayload);
+      updateLogResponse(logId, data2, 'success');
+      setSimulationStep(`Complete: Transfer Score ${data2.score} | ${data2.verdict.toUpperCase()}`);
+      showToast(`Proxy bypass attempt: ${data2.verdict.toUpperCase()}`, 'error');
+    } catch (err: any) {
+      updateLogResponse(logId, undefined, 'failed', err.message);
+      showToast('Simulation error.', 'error');
+    } finally {
+      setIsSimulating(null);
+    }
   };
 
   // Attack 2: Account Takeover Sequence (ATO)
@@ -930,10 +921,10 @@ export default function AttackerDashboard() {
                 >
                   <div className="space-y-1 max-w-[80%]">
                     <div className="text-xs font-bold text-slate-200 group-hover:text-red-400 transition-colors flex items-center gap-1.5">
-                      <span>01 // Phishing Login Attempt</span>
+                      <span>01 // Residential Proxy Bypass</span>
                     </div>
                     <p className="text-[9px] text-slate-500 leading-normal">
-                      Simulates phished credential stuffing from a RU Tor Exit IP, curl User Agent, and pasted credentials.
+                      Albanian IP + correct iPhone UA evades geo/network detection. Caught purely by behavioral signals: 3ms/key typing, zero mouse, no session flow.
                     </p>
                   </div>
                   <div className="p-2 bg-slate-900 border border-slate-800 rounded-xl group-hover:border-red-800/40 text-slate-500 group-hover:text-red-400 transition-all shrink-0">
