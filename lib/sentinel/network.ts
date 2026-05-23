@@ -1,7 +1,10 @@
 // /lib/sentinel/network.ts
 import type { SentinelEvent, UserBaseline, Signal } from '../types';
+import { getRecentCardSwipe } from '../pos-ledger';
 
 const HIGH_RISK_COUNTRIES = new Set(['RU', 'KP', 'IR', 'BY', 'VN', 'NG', 'CN']);
+
+const BOT_UA = /curl|python-requests|wget|scrapy|mechanize|phantomjs|headless|selenium|puppeteer|playwright/i;
 
 // +20 — device fingerprint or ASN not seen before for this user
 function detectUnknownNetwork(event: SentinelEvent, baseline: UserBaseline): Signal | null {
@@ -27,7 +30,7 @@ function detectUnknownNetwork(event: SentinelEvent, baseline: UserBaseline): Sig
   return { name: 'unknown_network', layer: 'network', weight: 20, reason: parts.join('; ') };
 }
 
-// +35 — country differs from user's registered home country
+// +35 — country differs from user's home baseline (or -35 via cross-channel POS clearance)
 function detectImpossibleTravel(event: SentinelEvent, baseline: UserBaseline, country: string): Signal | null {
   if (country === baseline.usualCountry) return null;
 
@@ -36,6 +39,23 @@ function detectImpossibleTravel(event: SentinelEvent, baseline: UserBaseline, co
     layer: 'network',
     weight: 35,
     reason: `Request from "${country}" but user "${baseline.userId}" home country is "${baseline.usualCountry}"`,
+  };
+}
+
+// -35 — Physical Card POS swipe confirms user is genuinely in the foreign country.
+// Neutralises the impossible_travel penalty and prevents false-positive lockout.
+function detectCrossChannelVerified(event: SentinelEvent, baseline: UserBaseline, country: string): Signal | null {
+  if (country === baseline.usualCountry) return null;
+
+  const swipe = getRecentCardSwipe(event.userId, country);
+  if (!swipe) return null;
+
+  const agoMin = Math.round((Date.now() - swipe.timestamp) / 60_000);
+  return {
+    name: 'cross_channel_verified',
+    layer: 'network',
+    weight: -35,
+    reason: `Physical Card POS swipe confirmed at "${swipe.merchant}" (${country}) ${agoMin} min ago — impossible_travel penalty neutralised`,
   };
 }
 
@@ -65,14 +85,29 @@ function detectHighRiskGeo(event: SentinelEvent, _baseline: UserBaseline, countr
   };
 }
 
+// +45 — User-Agent matches known bot/automation framework signature.
+// Proxy for JA3 TLS fingerprinting: headless browsers expose distinct UA strings
+// that differ from genuine browser TLS Client Hello fingerprints.
+function detectBotTlsFingerprint(event: SentinelEvent, _baseline: UserBaseline): Signal | null {
+  if (!BOT_UA.test(event.userAgent)) return null;
+
+  return {
+    name: 'bot_tls_fingerprint',
+    layer: 'network',
+    weight: 45,
+    reason: `User-Agent "${event.userAgent}" matches bot/automation TLS fingerprint pattern (curl, Python-Requests, Playwright, Puppeteer, etc.)`,
+  };
+}
+
 export function networkDetectors(event: SentinelEvent, baseline: UserBaseline): Signal[] {
-  // Normalise country — frontend may send geoCountry or geoCity instead of country
   const country = event.country ?? event.geoCountry ?? event.geoCity ?? 'unknown';
 
   return [
     detectUnknownNetwork(event, baseline),
     detectImpossibleTravel(event, baseline, country),
+    detectCrossChannelVerified(event, baseline, country),
     detectRequestFlood(event, baseline),
     detectHighRiskGeo(event, baseline, country),
+    detectBotTlsFingerprint(event, baseline),
   ].filter((s): s is Signal => s !== null);
 }

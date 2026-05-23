@@ -53,6 +53,7 @@ export interface SentinelEvent {
   requestRateLastMinute?: number;
   attackScenario?: string;
   typingSpeedMs?: number;
+  mouseMovementScore?: number;
   precedingEvents?: string[];
 }
 

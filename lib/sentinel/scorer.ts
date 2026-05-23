@@ -25,7 +25,8 @@ export function score(event: SentinelEvent): RiskAssessment {
     ...transactionalDetectors(event, baseline),
   ];
 
-  const totalScore = Math.min(100, signals.reduce((s, sig) => s + sig.weight, 0));
+  // Clamp to [0, 100] — negative weights (e.g. cross_channel_verified) can reduce score below zero
+  const totalScore = Math.max(0, Math.min(100, signals.reduce((s, sig) => s + sig.weight, 0)));
 
   let verdict: RiskAssessment['verdict'];
   if (totalScore <= 30) verdict = 'allow';
