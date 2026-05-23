@@ -5,12 +5,19 @@ import { useRouter } from 'next/navigation';
 import { useSession } from '@/lib/session';
 import { buildEvent } from '@/lib/telemetry';
 import { submitEvent } from '@/lib/mock-api';
-import { ChevronLeft, AlertTriangle, ShieldCheck, ShieldAlert, Sparkles, Lock } from 'lucide-react';
+import { ChevronLeft, AlertTriangle, ShieldCheck, ShieldAlert, Sparkles, Lock, Wallet } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { USERS } from '@/lib/users';
+
+const STARTING_BALANCES: Record<string, number> = {
+  user_001: 2840.00,
+  user_002: 1205.00,
+  user_003: 8950.00,
+};
 
 export default function BankTransferPage() {
   const router = useRouter();
-  const { userId, sessionId, sessionStartMs, precedingEvents, knownPayeesList, addAssessment, pushEvent } = useSession();
+  const { userId, sessionId, sessionStartMs, precedingEvents, precedingAssessments, knownPayeesList, addAssessment, pushEvent } = useSession();
   const [mounted, setMounted] = useState(false);
 
   // Form states
@@ -36,6 +43,15 @@ export default function BankTransferPage() {
 
   // Focus ref for typing telemetry
   const amountInputRef = useRef<HTMLInputElement>(null);
+
+  // Computed available balance (mirrors home page logic)
+  const availableBalance = (() => {
+    const initial = STARTING_BALANCES[userId] ?? 1000;
+    const deducted = precedingAssessments
+      .filter(e => e.type === 'transfer' && e.verdict !== 'block' && e.amount !== undefined)
+      .reduce((sum, e) => sum + (e.amount ?? 0), 0);
+    return initial - deducted;
+  })();
 
   useEffect(() => {
     setMounted(true);
@@ -87,6 +103,18 @@ export default function BankTransferPage() {
     const amountNum = parseFloat(amountStr);
     if (isNaN(amountNum) || amountNum <= 0) {
       setErrorMsg('Please specify a positive transfer amount.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Balance guard — prevent overdraft
+    const initialBalance = STARTING_BALANCES[userId] ?? 1000;
+    const totalDeducted = precedingAssessments
+      .filter(e => e.type === 'transfer' && e.verdict !== 'block' && e.amount !== undefined)
+      .reduce((sum, e) => sum + (e.amount ?? 0), 0);
+    const availableBalance = initialBalance - totalDeducted;
+    if (amountNum > availableBalance) {
+      setErrorMsg(`Insufficient funds. Available balance: €${availableBalance.toFixed(2)}`);
       setIsSubmitting(false);
       return;
     }
@@ -470,6 +498,18 @@ export default function BankTransferPage() {
                 <span>External accounts violate baseline beneficiary white-lists and trigger elevated SafeShield™ risk scores automatically.</span>
               </div>
             )}
+          </div>
+
+          {/* Available Balance Chip */}
+          <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm">
+            <Wallet className="w-4 h-4 text-[#0a3474] shrink-0" />
+            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-mono">Available Balance</span>
+            <span className={cn(
+              "ml-auto text-sm font-black font-mono",
+              availableBalance <= 0 ? "text-[#d61827]" : "text-[#0a3474]"
+            )}>
+              €{availableBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
           </div>
 
           {/* Amount Field */}
