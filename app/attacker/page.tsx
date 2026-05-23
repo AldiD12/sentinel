@@ -580,20 +580,9 @@ export default function AttackerDashboard() {
 
     setTimeout(async () => {
       try {
-        const res = await fetch('/api/events', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-        
-        if (res.ok) {
-          const data = await res.json();
-          updateLogResponse(logId, data, 'success');
-          showToast(`Travel Assessment complete. Verdict: ${data.verdict.toUpperCase()} (FP protection validated)`, 'success');
-        } else {
-          const errText = await res.text();
-          updateLogResponse(logId, undefined, 'failed', errText);
-        }
+        const data = await submitEvent(payload);
+        updateLogResponse(logId, data, 'success');
+        showToast(`Travel Assessment complete. Verdict: ${data.verdict.toUpperCase()} (FP protection validated)`, 'success');
       } catch (err: any) {
         updateLogResponse(logId, undefined, 'failed', err.message);
       } finally {
