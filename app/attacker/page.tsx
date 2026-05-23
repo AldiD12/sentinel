@@ -369,7 +369,8 @@ export default function AttackerDashboard() {
       requestRateLastMinute: 1,
       hasValidCSRF: true,
       amount: 1500,
-      payeeId: target.knownPayees[0], // Whisitelisted target payee!
+      payeeId: target.knownPayees[0], // Whitelisted target payee — known to the user
+      isKnownPayee: true,
       payeeIsNew: false
     };
 
