@@ -272,10 +272,10 @@ export default function SecurityOperationsDashboard() {
   });
 
   return (
-    <div className="dark min-h-screen bg-[#030914] text-slate-100 font-sans selection:bg-blue-500 selection:text-white flex flex-col p-4 md:p-6 relative overflow-hidden">
+    <div className="dark min-h-screen bg-[#030914] text-slate-100 font-sans selection:bg-indigo-500 selection:text-white flex flex-col p-4 md:p-6 relative overflow-hidden">
       
       {/* Background Soft Professional Gradients */}
-      <div className="absolute top-0 right-1/4 -translate-y-1/2 w-[600px] h-[600px] bg-blue-900/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-0 right-1/4 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-900/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 translate-y-1/2 w-[500px] h-[500px] bg-slate-900/10 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Real-time Notification Banner */}
@@ -284,7 +284,7 @@ export default function SecurityOperationsDashboard() {
           "fixed top-6 right-6 z-50 px-5 py-3.5 rounded-2xl shadow-2xl border flex items-center gap-3 animate-slide-up text-sm font-mono",
           notification.type === 'success' && "bg-[#0b1c2e] border-emerald-500/30 text-emerald-400",
           notification.type === 'error' && "bg-[#180a0a] border-red-500/30 text-red-400",
-          notification.type === 'info' && "bg-[#0c1424] border-blue-500/30 text-blue-400"
+          notification.type === 'info' && "bg-[#0c1424] border-indigo-500/30 text-indigo-400"
         )}>
           {notification.type === 'success' && <CheckCircle className="w-5 h-5" />}
           {notification.type === 'error' && <XCircle className="w-5 h-5 animate-bounce" />}
@@ -358,10 +358,10 @@ export default function SecurityOperationsDashboard() {
 
             {/* Latency Card */}
             <Card className="bg-[#050d1a] border-slate-800/80 px-4 py-2.5 rounded-xl flex items-center gap-3 min-w-[110px] text-slate-100 shadow-sm">
-              <div className="w-1 h-7 rounded-full bg-blue-500" />
+              <div className="w-1 h-7 rounded-full bg-indigo-500" />
               <div>
                 <div className="text-[8px] font-bold text-slate-500 font-mono tracking-wider">AVG RESPONSE</div>
-                <div className="text-base font-black font-mono text-blue-400 leading-tight">
+                <div className="text-base font-black font-mono text-indigo-400 leading-tight">
                   {stats.avgLatency || 0}<span className="text-[10px] font-normal text-slate-500 ml-0.5">ms</span>
                 </div>
               </div>
@@ -378,7 +378,7 @@ export default function SecurityOperationsDashboard() {
               placeholder="Filter by threat indicators, risk factors, users, geolocation subnets, event IDs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#050d1a] border border-slate-800/80 rounded-lg py-2 pl-10 pr-4 text-xs text-slate-200 placeholder-slate-500 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
+              className="w-full bg-[#050d1a] border border-slate-800/80 rounded-lg py-2 pl-10 pr-4 text-xs text-slate-200 placeholder-slate-500 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20"
             />
             <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
           </div>
@@ -388,7 +388,7 @@ export default function SecurityOperationsDashboard() {
             <select 
               value={verdictFilter}
               onChange={(e) => setVerdictFilter(e.target.value)}
-              className="w-full bg-[#050d1a] border border-slate-800/80 rounded-lg py-1.5 px-3 text-xs font-semibold text-slate-350 cursor-pointer outline-none focus:border-blue-500"
+              className="w-full bg-[#050d1a] border border-slate-800/80 rounded-lg py-1.5 px-3 text-xs font-semibold text-slate-350 cursor-pointer outline-none focus:border-indigo-500"
             >
               <option value="all">ALL VERDICTS</option>
               <option value="allow">APPROVED ONLY</option>
@@ -402,7 +402,7 @@ export default function SecurityOperationsDashboard() {
             <select 
               value={userFilter}
               onChange={(e) => setUserFilter(e.target.value)}
-              className="w-full bg-[#050d1a] border border-slate-800/80 rounded-lg py-1.5 px-3 text-xs font-semibold text-slate-350 cursor-pointer outline-none focus:border-blue-500"
+              className="w-full bg-[#050d1a] border border-slate-800/80 rounded-lg py-1.5 px-3 text-xs font-semibold text-slate-350 cursor-pointer outline-none focus:border-indigo-500"
             >
               <option value="all">ALL CUSTOMERS</option>
               {Object.values(USERS).map(u => (
@@ -420,7 +420,7 @@ export default function SecurityOperationsDashboard() {
             <CardHeader className="flex flex-row justify-between items-center border-b border-slate-800/60 py-3.5 px-5">
               <div>
                 <CardTitle className="text-xs font-extrabold font-mono uppercase tracking-wider text-slate-200 flex items-center gap-2">
-                  <Terminal className="w-4 h-4 text-blue-400" /> Security Telemetry Ingestion Stream
+                  <Terminal className="w-4 h-4 text-indigo-400" /> Security Telemetry Ingestion Stream
                 </CardTitle>
                 <CardDescription className="text-[9px] font-mono text-slate-500 mt-0.5">
                   REAL-TIME NETWORK, BIOMETRIC & TRANSACTIONAL EVENT RECORDS
@@ -491,7 +491,7 @@ export default function SecurityOperationsDashboard() {
 
                           {/* Type Column */}
                           <TableCell className="px-3 py-3 font-mono">
-                            <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-slate-950 border border-slate-850 text-blue-400 uppercase tracking-wider">
+                            <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-slate-950 border border-slate-850 text-indigo-400 uppercase tracking-wider">
                               {evt.type.replace('_', ' ')}
                             </span>
                           </TableCell>
@@ -524,7 +524,7 @@ export default function SecurityOperationsDashboard() {
           {/* RIGHT: 40% EVENT DETAIL INSPECTOR */}
           <Card className="lg:col-span-4 bg-[#081225]/80 border-slate-800/80 flex flex-col h-[560px] overflow-hidden text-slate-100 shadow-sm">
             <CardHeader className="border-b border-slate-800/60 py-3 px-4 flex flex-row items-center gap-2">
-              <Shield className="w-4 h-4 text-blue-400 shrink-0" />
+              <Shield className="w-4 h-4 text-indigo-400 shrink-0" />
               <div>
                 <CardTitle className="text-xs font-bold font-mono uppercase tracking-wider text-slate-200">
                   Biometric Telemetry Inspector
@@ -551,7 +551,7 @@ export default function SecurityOperationsDashboard() {
                     {/* Top Overview Panel */}
                     <div className="bg-slate-950/80 border border-slate-850 p-4 rounded-xl flex items-center justify-between gap-4">
                       <div className="space-y-1 max-w-[60%]">
-                        <span className="text-[8px] font-bold font-mono bg-slate-900 border border-slate-850 text-blue-400 px-2 py-0.5 rounded uppercase tracking-wider">
+                        <span className="text-[8px] font-bold font-mono bg-slate-900 border border-slate-850 text-indigo-400 px-2 py-0.5 rounded uppercase tracking-wider">
                           {selectedEvent.type.replace('_', ' ')}
                         </span>
                         <h3 className="text-sm font-extrabold text-white mt-1.5 font-sans leading-none truncate" title={getUserName(selectedEvent.userId)}>
@@ -583,8 +583,8 @@ export default function SecurityOperationsDashboard() {
                       </div>
                       <div className="text-right">
                         <div className="text-[8px] font-mono text-slate-500 uppercase font-bold tracking-wider">Ingestion Time</div>
-                        <span className="text-xs font-mono font-bold text-blue-405 flex items-center justify-end gap-1 mt-1 leading-none">
-                          <Zap className="w-3.5 h-3.5 fill-blue-500/20 text-blue-400" /> Audited in {selectedEvent.latencyMs}ms
+                        <span className="text-xs font-mono font-bold text-indigo-400 flex items-center justify-end gap-1 mt-1 leading-none">
+                          <Zap className="w-3.5 h-3.5 fill-indigo-500/20 text-indigo-400" /> Audited in {selectedEvent.latencyMs}ms
                         </span>
                       </div>
                     </div>
@@ -646,7 +646,7 @@ export default function SecurityOperationsDashboard() {
                               rows={2}
                               value={overrideNote}
                               onChange={(e) => setOverrideNote(e.target.value)}
-                              className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-slate-200 outline-none focus:border-blue-500 resize-none text-[10px] leading-relaxed font-sans"
+                              className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-slate-200 outline-none focus:border-indigo-500 resize-none text-[10px] leading-relaxed font-sans"
                               required
                             />
                           </div>
