@@ -589,6 +589,40 @@ export default function SecurityOperationsDashboard() {
                       </div>
                     </div>
 
+                    {/* ── ANALYST RECOMMENDATION ─────────────────────────────
+                         This is the key "remove manual analyst work" feature.
+                         The scoring engine generates an exact action instruction
+                         so analysts never have to interpret signals themselves. */}
+                    {selectedEvent.recommendation && (
+                      <div className={cn(
+                        "border rounded-xl p-3.5 space-y-1.5 font-mono text-[10px] shadow-sm",
+                        selectedEvent.verdict === 'allow'          && "bg-emerald-950/20 border-emerald-700/30",
+                        selectedEvent.verdict === 'soft_challenge' && "bg-amber-950/20 border-amber-700/30",
+                        selectedEvent.verdict === 'hard_challenge' && "bg-orange-950/20 border-orange-700/30",
+                        selectedEvent.verdict === 'block'          && "bg-red-950/25 border-red-700/40 animate-pulse",
+                      )}>
+                        <div className={cn(
+                          "flex items-center gap-1.5 font-extrabold uppercase tracking-widest text-[8px]",
+                          selectedEvent.verdict === 'allow'          && "text-emerald-400",
+                          selectedEvent.verdict === 'soft_challenge' && "text-amber-400",
+                          selectedEvent.verdict === 'hard_challenge' && "text-orange-400",
+                          selectedEvent.verdict === 'block'          && "text-red-400",
+                        )}>
+                          <Zap className="w-3 h-3 shrink-0" />
+                          Analyst Recommendation
+                        </div>
+                        <p className={cn(
+                          "leading-relaxed font-sans text-[10px]",
+                          selectedEvent.verdict === 'allow'          && "text-emerald-300",
+                          selectedEvent.verdict === 'soft_challenge' && "text-amber-200",
+                          selectedEvent.verdict === 'hard_challenge' && "text-orange-200",
+                          selectedEvent.verdict === 'block'          && "text-red-200",
+                        )}>
+                          {selectedEvent.recommendation}
+                        </p>
+                      </div>
+                    )}
+
                     {/* Overridden state banner */}
                     {selectedEvent.overridden ? (
                       <div className="bg-emerald-950/20 border border-emerald-900/30 p-3 rounded-xl space-y-1 font-mono text-[10px] text-emerald-400">
