@@ -66,6 +66,10 @@ function detectApiReplayPattern(event: SentinelEvent, _baseline: UserBaseline): 
 function detectTransferVelocity(event: SentinelEvent, _baseline: UserBaseline): Signal | null {
   if (event.type !== 'transfer') return null;
 
+  // If the client provides a session breadcrumb (human navigated through screens),
+  // trust the flow timing — velocity check is only for zero-context direct POSTs
+  if (event.precedingEvents && event.precedingEvents.length > 0) return null;
+
   const last = getLastEventForUser(event.userId);
   if (!last?.timestamp || !event.timestamp) return null;
 

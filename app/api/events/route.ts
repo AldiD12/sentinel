@@ -13,7 +13,13 @@ export async function POST(req: NextRequest) {
     timestamp: Date.now(),
     // Normalise country — attacker/bank pages may send geoCountry or geoCity
     country: raw.country ?? raw.geoCountry ?? raw.geoCity ?? 'unknown',
-    requestRateLastMinute: getRequestRate(body.userId),
+    // Take the higher of store-calculated rate vs client-reported rate.
+    // During DoS the attacker console reports the flood rate directly;
+    // in the store-based path the flood events must already be ingested.
+    requestRateLastMinute: Math.max(
+      getRequestRate(body.userId),
+      body.requestRateLastMinute ?? 0
+    ),
   };
 
   const assessment = score(event);
